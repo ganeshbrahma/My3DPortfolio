@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 // src/NewNetflix.jsx
+=======
+>>>>>>> origin/main
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./index.css";
@@ -38,20 +41,28 @@ const PROFILE = {
       ],
     },
   ],
+<<<<<<< HEAD
 
   /* ===== Experience ===== */
+=======
+>>>>>>> origin/main
   experience: [
     {
       company: "Munich Re",
       role: "Data Engineering & Analysis Intern",
+<<<<<<< HEAD
       type: "Internship",
       timeRange: "Jun 2025 – Aug 2025",
       location: "New York, USA",
+=======
+      time: "Jun 2025 – Aug 2025 • New York, USA",
+>>>>>>> origin/main
       bullets: [
         "Built a Deductible Recovery report uncovering ~$8M in unpaid deductibles; improved Claims recovery tracking.",
         "Developed Databricks Delta Live Tables ETL (PySpark/Python), +40% processing speed; enforced governance via Unity Catalog.",
         "Automated multi-sheet Excel ingestion to ADLS; orchestrated REST API workflows for Databricks job deps/monitoring.",
       ],
+<<<<<<< HEAD
       tags: [
         "Databricks",
         "Delta Live Tables",
@@ -63,18 +74,25 @@ const PROFILE = {
         "Pandas",
         "Event Hub",
       ],
+=======
+>>>>>>> origin/main
     },
     {
       company: "Cognizant @ Molina Healthcare",
       role: "Associate Data Engineer",
+<<<<<<< HEAD
       type: "Fulltime",
       timeRange: "Oct 2020 – Dec 2023",
       location: "Remote",
+=======
+      time: "Oct 2020 – Dec 2023 • Remote",
+>>>>>>> origin/main
       bullets: [
         "Boosted AnG pipeline speed 57% (7h → 3h) via Spark/Scala optimizations on Databricks.",
         "Migrated pipelines from Cloudera to Azure; implemented CI/CD for scale/maintainability.",
         "ETL processing 500M+ records/week with Python/SQL/Airflow; added DQ/gov checks to reduce rework 20–30%.",
       ],
+<<<<<<< HEAD
       tags: [
         "Databricks",
         "Spark",
@@ -87,10 +105,13 @@ const PROFILE = {
         "CI/CD",
         "Data Quality",
       ],
+=======
+>>>>>>> origin/main
     },
     {
       company: "Applaudo @ Walmart",
       role: "Data Engineer",
+<<<<<<< HEAD
       type: "Freelance",
       timeRange: "Nov 2022 – May 2023",
       location: "Remote",
@@ -113,6 +134,14 @@ const PROFILE = {
     },
   ],
 
+=======
+      time: "Nov 2022 – May 2023 • Remote",
+      bullets: [
+        "BigQuery ingestion & transformations with SQL, Airflow, Terraform, GitLab CI — 40% runtime reduction.",
+      ],
+    },
+  ],
+>>>>>>> origin/main
   certs: [
     {
       name: "Microsoft Certified: Azure Data Engineer Associate",
@@ -140,6 +169,7 @@ const NAV = [
   { id: "contact", label: "Contact" },
 ];
 
+<<<<<<< HEAD
 /* ===== Global scroll un-locker (hard override) ===== */
 function GlobalScrollFix() {
   useEffect(() => {
@@ -158,6 +188,8 @@ function GlobalScrollFix() {
   return null;
 }
 
+=======
+>>>>>>> origin/main
 /* ===== Bot brain ===== */
 function useBotBrain() {
   const jokes = useMemo(
@@ -168,6 +200,7 @@ function useBotBrain() {
     ],
     []
   );
+<<<<<<< HEAD
 
   const score = (q, words) =>
     words.reduce((s, w) => s + (q.toLowerCase().includes(w) ? 1 : 0), 0);
@@ -617,6 +650,32 @@ function SparkieChat({ onClose }) {
   );
 }
 
+=======
+  const score = (q, words) =>
+    words.reduce((s, w) => s + (q.toLowerCase().includes(w) ? 1 : 0), 0);
+
+  function answer(q) {
+    const intents = [
+      {
+        k: "education",
+        s: score(q, ["education", "school", "study", "degree", "college", "masters", "ms"]),
+        a:
+          "Here’s my education:\n• University of Central Missouri — M.S., Computer Science (Jan 2024 – Aug 2025)",
+      },
+      { k: "visa", s: score(q, ["visa", "authorization", "opt", "status", "sponsorship"]), a: "Currently on F-1 OPT (work authorized). Open to full-time roles; start date flexible." },
+      { k: "summary", s: score(q, ["about", "summary", "introduce", "who are you"]), a: PROFILE.summary },
+      { k: "skills", s: score(q, ["skills", "stack", "tech", "tooling"]), a: "Core skills: " + PROFILE.skills },
+      { k: "joke", s: score(q, ["joke", "funny", "laugh", "lol"]), a: jokes[Math.floor(Math.random() * jokes.length)] },
+      { k: "hi", s: score(q, ["hi", "hello", "hey"]), a: `Hey! I’m GBot. Ask about education, visa status, summary, skills — or say “tell me a joke”.` },
+    ].sort((a, b) => b.s - a.s)[0];
+    return intents.s > 0
+      ? intents.a
+      : "Great question — I’ll get back to you on that. For now I can answer education, visa status, summary, skills, or tell a joke.";
+  }
+  return { answer };
+}
+
+>>>>>>> origin/main
 /* ===== Typewriter ===== */
 function Typewriter({ text, speed = 16 }) {
   const [i, setI] = useState(0);
@@ -640,6 +699,7 @@ function Typewriter({ text, speed = 16 }) {
   return <span>{text?.slice(0, i)}</span>;
 }
 
+<<<<<<< HEAD
 /* ===== Role Wheel ===== */
 function RoleWheel({ stepMs = 1600, gapPx = 6, className = "" }) {
   const STEPS = [
@@ -760,15 +820,139 @@ function RoleWheel({ stepMs = 1600, gapPx = 6, className = "" }) {
 
 /* ===== Header ===== */
 function Header({ activeId, onNavClick, onLogoClick }) {
+=======
+/* ===== GBot (scroll-fix: container scrollTo, not page) ===== */
+function HologramChat() {
+  const { answer } = useBotBrain();
+  const [messages, setMessages] = useState([
+    { role: "bot", text: `Hi! I’m GBot. Ask about education, visa status, a short summary, skills — or say “tell me a joke”.`, typewriter: true },
+  ]);
+  const [input, setInput] = useState("");
+  const [thinking, setThinking] = useState(false);
+
+  const scrollRef = useRef(null);
+
+  // keep chat scrolled to bottom when new stuff appears (no page jump)
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  }, [messages, thinking]);
+
+  function send(qIn) {
+    const mapped = qIn === "joke" ? "tell me a joke" : qIn;
+    const q = (mapped ?? input).trim();
+    if (!q) return;
+    setMessages((m) => [...m, { role: "user", text: q }]);
+    setInput("");
+    setThinking(true);
+    setTimeout(() => {
+      const reply = answer(q);
+      setMessages((m) => [...m, { role: "bot", text: reply, typewriter: true }]);
+      setThinking(false);
+    }, 800);
+  }
+  function onKey(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+  }
+
+  const chips = ["education", "visa", "summary", "skills", "joke"];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 240, damping: 22, delay: 0.05 }}
+      className="relative mx-auto mt-8 w-full max-w-3xl overflow-hidden rounded-3xl border border-white/10 bg-neutral-950/80 shadow-[0_25px_120px_rgba(0,0,0,0.6)] backdrop-blur"
+    >
+      <div className="flex items-center justify-between border-b border-white/5 px-5 py-3">
+        <div className="font-semibold">GBot</div>
+        <div className="text-xs text-neutral-400">hologram channel</div>
+      </div>
+
+      <div
+        ref={scrollRef}
+        className="chat-scroll max-h-[70vh] min-h-[280px] overflow-y-scroll px-5 py-4 space-y-3 text-sm"
+        style={{ WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}
+        onWheel={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+      >
+        {messages.map((m, i) => (
+          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div
+              className={`rounded-2xl px-3 py-2 leading-relaxed ${
+                m.role === "user" ? "bg-red-600 text-white" : "bg-white/5 text-neutral-200"
+              }`}
+              style={{ maxWidth: "85%" }}
+            >
+              {m.typewriter ? <Typewriter text={m.text} /> : m.text}
+            </div>
+          </div>
+        ))}
+
+        {thinking && (
+          <div className="flex justify-start">
+            <div className="relative rounded-2xl bg-white/5 px-3 py-2 text-neutral-400">
+              thinking…
+              <span className="ml-2 inline-block h-[2px] w-16 animate-holo-shimmer rounded bg-gradient-to-r from-transparent via-white/70 to-transparent" />
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2 border-t border-white/5 bg-gradient-to-r from-transparent to-white/5 px-5 py-3">
+        <div className="hidden gap-2 sm:flex">
+          {chips.map((t) => (
+            <button
+              key={t}
+              onClick={() => send(t)}
+              className="h-9 whitespace-nowrap rounded-xl bg-white/5 px-3 text-xs font-medium text-neutral-300 transition hover:bg-white/10"
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+        <textarea
+          rows={1}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={onKey}
+          placeholder="Ask GBot…"
+          className="w-full resize-none rounded-xl bg-white/5 px-3 py-2 outline-none placeholder:text-neutral-500"
+        />
+        <button onClick={() => send()} className="h-9 rounded-xl bg-red-600 px-4 text-sm font-semibold hover:bg-red-500">
+          Send
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ===== Header with active underline and G logo ===== */
+function Header({ activeId, onNavClick }) {
+>>>>>>> origin/main
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-white/5 bg-black/70 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <button
+<<<<<<< HEAD
           onClick={() => (onLogoClick ? onLogoClick() : onNavClick("home"))}
           className="flex items-center gap-2 text-white"
           aria-label="Go to Home"
         >
           <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-red-600 text-xs font-black">G</div>
+=======
+          onClick={() => onNavClick("home")}
+          className="flex items-center gap-2 text-white"
+          aria-label="Go to Home"
+        >
+          <div className="flex h-7 w-7 items-center justify-center rounded-sm bg-red-600 text-xs font-black">
+            G
+          </div>
+>>>>>>> origin/main
         </button>
 
         <nav className="hidden items-center gap-6 sm:flex text-sm">
@@ -795,6 +979,7 @@ function Header({ activeId, onNavClick, onLogoClick }) {
   );
 }
 
+<<<<<<< HEAD
 /* ===== Sections ===== */
 function Section({ id, title, children }) {
   return (
@@ -807,15 +992,28 @@ function Section({ id, title, children }) {
           </p>
         </div>
       )}
+=======
+/* ===== Section wrapper ===== */
+function Section({ id, title, children }) {
+  return (
+    <section id={id} className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+      {title && <h2 className="mb-4 text-2xl font-bold text-white">{title}</h2>}
+>>>>>>> origin/main
       {children}
     </section>
   );
 }
 
+<<<<<<< HEAD
 /* ===== Intro overlay ===== */
 function GIntro({ onDone }) {
   const [stage, setStage] = useState("splash");
 
+=======
+/* ===== Intro “G” overlay (restored) ===== */
+function GIntro({ onDone }) {
+  const [stage, setStage] = useState("splash");
+>>>>>>> origin/main
   useEffect(() => {
     if (stage === "anim") {
       const t = setTimeout(() => {
@@ -838,10 +1036,16 @@ function GIntro({ onDone }) {
           <span className="relative text-8xl font-black tracking-tight text-white drop-shadow-[0_0_20px_rgba(239,68,68,0.6)]">
             G
           </span>
+<<<<<<< HEAD
           <span className="absolute -bottom-10 text-sm text-neutral-400">Click to continue</span>
         </button>
       )}
 
+=======
+          <span className="absolute -bottom-10 text-sm text-neutral-400">click to enter</span>
+        </button>
+      )}
+>>>>>>> origin/main
       <AnimatePresence>
         {stage === "anim" && (
           <motion.div initial={{ opacity: 1 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -874,6 +1078,7 @@ function GIntro({ onDone }) {
   );
 }
 
+<<<<<<< HEAD
 /* ===== Hub images ===== */
 const HUB_IMAGES = {
   home: "/cards/about.jpg",
@@ -1133,10 +1338,19 @@ export default function NewNetflix() {
   const [modal, setModal] = useState(null);
   const [sparkieOpen, setSparkieOpen] = useState(false);
 
+=======
+/* ===== App ===== */
+export default function App() {
+  const [activeId, setActiveId] = useState("home");
+  const [showMain, setShowMain] = useState(false);
+
+  // Always start at the very top (fix for opening mid-page)
+>>>>>>> origin/main
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+<<<<<<< HEAD
   // Highlight the nav item of the section whose center is closest to the viewport center
   useEffect(() => {
     if (!showMain) return;
@@ -1171,6 +1385,26 @@ export default function NewNetflix() {
       window.removeEventListener("scroll", updateActive);
       window.removeEventListener("resize", updateActive);
     };
+=======
+  // Scroll-spy
+  useEffect(() => {
+    if (!showMain) return;
+    const ids = NAV.map((n) => n.id);
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActiveId(visible.target.id);
+      },
+      { rootMargin: "-40% 0px -50% 0px", threshold: [0.25, 0.5, 0.75, 1] }
+    );
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) obs.observe(el);
+    });
+    return () => obs.disconnect();
+>>>>>>> origin/main
   }, [showMain]);
 
   function scrollToId(id) {
@@ -1180,17 +1414,25 @@ export default function NewNetflix() {
 
   return (
     <div className="min-h-screen bg-black text-neutral-200 selection:bg-red-600/60 selection:text-white">
+<<<<<<< HEAD
       <GlobalScrollFix />
 
+=======
+>>>>>>> origin/main
       {!showMain && (
         <GIntro
           onDone={() => {
             setShowMain(true);
+<<<<<<< HEAD
+=======
+            // ensure the hero top is visible after intro
+>>>>>>> origin/main
             setTimeout(() => window.scrollTo({ top: 0, behavior: "instant" }), 10);
           }}
         />
       )}
 
+<<<<<<< HEAD
       <Modal id={modal} onClose={() => setModal(null)} />
 
       {showMain && (
@@ -1228,6 +1470,26 @@ export default function NewNetflix() {
 
             <section id="projects" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
               <h2 className="mb-4 text-2xl font-bold text-white">Projects</h2>
+=======
+      {showMain && (
+        <>
+          <Header activeId={activeId} onNavClick={scrollToId} />
+
+          <main className="pt-20">
+            <Section id="home">
+              <h1 className="text-4xl font-extrabold text-white sm:text-6xl">
+                Hi, I’m <span className="text-red-500">{PROFILE.name}</span> — {PROFILE.title}
+              </h1>
+              <p className="mt-3 max-w-3xl text-lg text-neutral-300">{PROFILE.summary}</p>
+              <HologramChat />
+            </Section>
+
+            <Section id="skills" title="Skills">
+              <p className="max-w-4xl leading-relaxed text-neutral-300">{PROFILE.skills}</p>
+            </Section>
+
+            <Section id="projects" title="Projects">
+>>>>>>> origin/main
               <div className="grid gap-4 sm:grid-cols-2">
                 {PROFILE.projects.map((p) => (
                   <div key={p.name} className="rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -1248,6 +1510,7 @@ export default function NewNetflix() {
                   </div>
                 ))}
               </div>
+<<<<<<< HEAD
             </section>
 
             <Section id="experience" title="Experience">
@@ -1256,6 +1519,31 @@ export default function NewNetflix() {
 
             <section id="certs" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
               <h2 className="mb-4 text-2xl font-bold text-white">Certifications</h2>
+=======
+            </Section>
+
+            <Section id="experience" title="Experience">
+              <div className="space-y-5">
+                {PROFILE.experience.map((e) => (
+                  <div key={e.company} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
+                      <h3 className="text-lg font-semibold text-white">
+                        {e.role} — {e.company}
+                      </h3>
+                      <span className="text-xs text-neutral-400">{e.time}</span>
+                    </div>
+                    <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-neutral-300">
+                      {e.bullets.map((b, i) => (
+                        <li key={i}>{b}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </Section>
+
+            <Section id="certs" title="Certifications">
+>>>>>>> origin/main
               <ul className="space-y-2">
                 {PROFILE.certs.map((c) => (
                   <li key={c.name} className="text-neutral-300">
@@ -1265,10 +1553,16 @@ export default function NewNetflix() {
                   </li>
                 ))}
               </ul>
+<<<<<<< HEAD
             </section>
 
             <section id="contact" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
               <h2 className="mb-4 text-2xl font-bold text-white">Contact</h2>
+=======
+            </Section>
+
+            <Section id="contact" title="Contact">
+>>>>>>> origin/main
               <ul className="space-y-2 text-neutral-300">
                 <li>
                   Email:{" "}
@@ -1289,7 +1583,11 @@ export default function NewNetflix() {
                   </a>
                 </li>
               </ul>
+<<<<<<< HEAD
             </section>
+=======
+            </Section>
+>>>>>>> origin/main
 
             <footer className="border-t border-white/5 py-10 text-center text-xs text-neutral-500">
               Built with ♥ React, Tailwind & Framer Motion. © {new Date().getFullYear()} Ganesh.
