@@ -242,13 +242,13 @@ const IconPin = (props) => (
     <circle cx="12" cy="10" r="3" />
   </svg>
 );
-
+const asset = (p) => import.meta.env.BASE_URL + p;
 /* ===== Company logos (add your files under /public/logos) ===== */
 const COMPANY_LOGOS = {
-  "munich re": "/logos/munich-re.png",
-  "cognizant @ molina healthcare": "/logos/cognizant.png",
-  "applaudo @ walmart": "/logos/applaudo.png",
-  "cognizant": "/logos/cognizant.png",
+  "munich re": asset("/logos/munich-re.png"),
+  "cognizant @ molina healthcare": asset("/logos/cognizant.png"),
+  "applaudo @ walmart": asset("/logos/applaudo.png"),
+  "cognizant": asset("/logos/cognizant.png"),
 };
 const getLogo = (company = "") => COMPANY_LOGOS[company.toLowerCase()];
 
@@ -876,12 +876,12 @@ function GIntro({ onDone }) {
 
 /* ===== Hub images ===== */
 const HUB_IMAGES = {
-  home: "/cards/about.jpg",
-  experience: "/cards/experience.jpg",
-  skills: "/cards/skills.jpg",
-  certs: "/cards/certs.png",
-  contact: "/cards/contact.jpg",
-  projects: "/cards/projects.png",
+  home: asset("/cards/about.jpg"),
+  experience: asset("/cards/experience.jpg"),
+  skills: asset("/cards/skills.jpg"),
+  certs: asset("/cards/certs.png"),
+  contact: asset("/cards/contact.jpg"),
+  projects: asset("/cards/projects.png"),
 };
 
 /* ===== Quick Look rail ===== */
