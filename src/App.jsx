@@ -7,6 +7,7 @@ import "./index.css";
 const PROFILE = {
   name: "Ganesh",
   title: "Data Engineer",
+  avatar: asset("/avatar/ganesh.jpeg"),
   summary:
     "I build reliable, observable data platforms with Spark/Databricks + Delta/Lakehouse, dbt and BI. Strong in SQL/Python, data modeling, and governance.",
   links: {
@@ -125,7 +126,7 @@ const PROFILE = {
         "https://learn.microsoft.com/api/credentials/share/en-in/ganeshbrahma-2238/58713C8EB434ED97?sharingId",
     },
     {
-      name: "The Data Scientist’s Toolbox (Coursera)",
+      name: "The Data Scientist's Toolbox (Coursera)",
       link: "https://www.coursera.org/account/accomplishments/verify/MCXN6QU5MC66",
     },
   ],
@@ -186,7 +187,7 @@ function useBotBrain() {
         k: "standout",
         s: score(q, ["unique", "stand out", "standout", "strength", "differentiator", "developer"]),
         a:
-          "Here’s what makes me unique:\n" +
+          "Here's what makes me unique:\n" +
           "• Platform + analysis: I speed up pipelines (57% faster on Databricks) *and* turn results into BI that execs use.\n" +
           "• Production-first: governance (Unity Catalog), DQ checks, observability—less rework, more trust.\n" +
           "• Cloud range: Azure (ADLS/Synapse/ADF), Databricks, plus GCP BigQuery/Airflow/Terraform.\n" +
@@ -201,7 +202,7 @@ function useBotBrain() {
       {
         k: "education",
         s: score(q, ["education", "school", "study", "degree", "college", "masters", "ms"]),
-        a: "Here’s my education:\n• University of Central Missouri — M.S., Computer Science (Jan 2024 – Aug 2025)",
+        a: "Here's my education:\n• University of Central Missouri — M.S., Computer Science (Jan 2024 – Aug 2025)",
       },
       {
         k: "visa",
@@ -211,12 +212,12 @@ function useBotBrain() {
       { k: "summary", s: score(q, ["about", "summary", "introduce", "who are you"]), a: PROFILE.summary },
       { k: "skills", s: score(q, ["skills", "stack", "tech", "tooling"]), a: "Core skills: " + PROFILE.skills },
       { k: "joke", s: score(q, ["joke", "funny", "laugh", "lol"]), a: jokes[Math.floor(Math.random() * jokes.length)] },
-      { k: "hi", s: score(q, ["hi", "hello", "hey"]), a: `Hey! I’m Sparkie. Ask about education, visa status, summary, skills — or say “tell me a joke”.` },
+      { k: "hi", s: score(q, ["hi", "hello", "hey"]), a: `Hey! I'm Sparkie. Ask about education, visa status, summary, skills — or say "tell me a joke".` },
     ].sort((a, b) => b.s - a.s)[0];
 
     return intents.s > 0 && intents.a
       ? intents.a
-      : "Great question — I’ll get back to you on that. For now I can answer education, visa status, summary, skills, or tell a joke.";
+      : "Great question — I'll get back to you on that. For now I can answer education, visa status, summary, skills, or tell a joke.";
   }
 
   return { answer };
@@ -243,12 +244,13 @@ const IconPin = (props) => (
   </svg>
 );
 const asset = (p) => import.meta.env.BASE_URL + p;
+
 /* ===== Company logos (add your files under /public/logos) ===== */
 const COMPANY_LOGOS = {
-  "munich re": asset("/logos/munich-re.png"),
-  "cognizant @ molina healthcare": asset("/logos/cognizant.png"),
+  "munich re": asset("/logos/munich-re.svg"),
+  "cognizant @ molina healthcare": asset("/logos/cognizant.svg"),
   "applaudo @ walmart": asset("/logos/applaudo.png"),
-  "cognizant": asset("/logos/cognizant.png"),
+  "cognizant": asset("/logos/cognizant.svg"),
 };
 const getLogo = (company = "") => COMPANY_LOGOS[company.toLowerCase()];
 
@@ -260,6 +262,219 @@ function SkillPill({ children }) {
     </span>
   );
 }
+
+/* ========================================================================== */
+/*                              TECHNICAL EXPERTISE                           */
+/* ========================================================================== */
+
+/** Icon paths — put SVG/PNG under /public/icons. Fallback is emoji/letter. */
+const ICONS = {
+  python: asset("/icons/python.png"),
+  pyspark: asset("/icons/pyspark.png"),
+  sql: asset("/icons/sql.png"),
+  nosql: asset("/icons/nosql.png"),
+  bigquery: asset("/icons/bigquery.png"),
+  java: asset("/icons/java.png"),
+  linux: asset("/icons/linux.png"),
+  javascript: asset("/icons/javascript.png"),
+  scala: asset("/icons/scala.png"),
+
+  spark: asset("/icons/spark.png"),
+  hadoop: asset("/icons/hadoop.png"),
+  hive: asset("/icons/hive.png"),
+  databricks: asset("/icons/databricks.png"),
+  airflow: asset("/icons/airflow.png"),
+  kafka: asset("/icons/kafka.png"),
+  terraform: asset("/icons/terraform.svg"),
+  snowflake: asset("/icons/snowflake.png"),
+
+  azure: asset("/icons/azure.png"),
+  aws: asset("/icons/aws.png"),
+  gcp: asset("/icons/gcp.svg"),
+
+  git: asset("/icons/git.svg"),
+  powerbi: asset("/icons/powerbi.svg"),
+  tableau: asset("/icons/tableau.png"),
+  docker: asset("/icons/docker.png"),
+  kubernetes: asset("/icons/kubernetes.png"),
+  vscode: asset("/icons/vscode.png"),
+};
+
+const YEARS_BADGE = "4y+";
+
+/** UPDATED: Optimized for Data Engineering with proper icon synchronization */
+const SKILL_SECTIONS = [
+  {
+    icon: "💻",
+    title: "Programming Languages",
+    items: [
+      { k: "python", name: "Python", sub: "AI/ML, automation, APIs, scripting" },
+      { k: "pyspark", name: "PySpark", sub: "Distributed data processing, Spark SQL" },
+      { k: "sql", name: "SQL", sub: "MySQL, SQL Server, Oracle, PostgreSQL, Teradata, PL/SQL" },
+      { k: "nosql", name: "NoSQL", sub: "MongoDB, HBase, DynamoDB, Cosmos DB" },
+      { k: "scala", name: "Scala", sub: "Spark optimization, functional programming" },
+      { k: "java", name: "Java", sub: "Enterprise applications, Spring Boot" },
+      { k: "linux", name: "Linux", sub: "Shell scripting, system administration" },
+      { k: "javascript", name: "JavaScript", sub: "Full stack development, React, Node.js" },
+    ],
+  },
+  {
+    icon: "🧱",
+    title: "Data Integration / ETL",
+    items: [
+      { k: "spark", name: "Apache Spark", sub: "Batch + streaming processing" },
+      { k: "hadoop", name: "Hadoop", sub: "HDFS, MapReduce, YARN" },
+      { k: "hive", name: "Hive / HiveQL", sub: "Data warehousing, SQL on Hadoop" },
+      { k: "databricks", name: "Databricks", sub: "Delta Live Tables, Unity Catalog, Lakehouse" },
+      { k: "airflow", name: "Airflow", sub: "Workflow orchestration, DAGs" },
+      { k: "kafka", name: "Kafka", sub: "Real-time event streaming" },
+      { k: "terraform", name: "Terraform", sub: "Infrastructure as Code" },
+      { k: "snowflake", name: "Snowflake", sub: "Cloud data warehouse, Snowpark" },
+    ],
+  },
+  {
+    icon: "☁️",
+    title: "Cloud Platforms",
+    items: [
+      { k: "azure", name: "Microsoft Azure", sub: "ADLS, ADF, Synapse, Databricks" },
+      { k: "aws", name: "AWS", sub: "S3, Lambda, Glue, Redshift, Athena" },
+      { k: "gcp", name: "GCP", sub: "BigQuery, Dataflow, Cloud Storage" },
+    ],
+  },
+  {
+    icon: "🧰",
+    title: "Developer Tools",
+    items: [
+      { k: "git", name: "Git", sub: "Git, GitLab, GitHub, CI/CD pipelines" },
+      { k: "powerbi", name: "BI & Analytics", sub: "Power BI, Tableau, data visualization" },
+      { k: "docker", name: "Containers", sub: "Docker, Kubernetes, containerization" },
+      { k: "vscode", name: "Editors & IDE", sub: "VS Code, IntelliJ, Jupyter" },
+    ],
+  },
+];
+
+/** Small right-aligned "4y+" badge */
+function YearsBadge() {
+  return (
+    <span className="ml-auto inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-neutral-100">
+      <span className="opacity-75">⏱</span> {YEARS_BADGE}
+    </span>
+  );
+}
+
+/** Inline icon without any background box, fits tightly like your blue example */
+function InlineIcon({ k, label }) {
+  const src = ICONS[k];
+  if (!src) {
+    // text fallback (no background)
+    return <span className="inline-block align-middle text-[15px]">{label?.[0] ?? "•"}</span>;
+  }
+  return (
+    <img
+      src={src}
+      alt={label || k}
+      className="inline-block h-[18px] w-auto align-middle object-contain"
+      loading="lazy"
+      decoding="async"
+    />
+  );
+}
+
+/** A single row (one skill per line) */
+function SkillRow({ item }) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <li
+      className="flex items-center gap-3 rounded-xl border border-white/20
+                 bg-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.25)]
+                 px-3 py-2.5 transition-all duration-300 transform
+                 hover:-translate-y-0.5 hover:shadow-[0_0_18px_rgba(255,255,255,0.6)]"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
+      }}
+    >
+      <InlineIcon k={item.k} label={item.name} />
+      <div className="min-w-0 flex-1 flex items-center justify-between">
+        <div className="min-w-0">
+          <div className="text-[15px] font-semibold text-white whitespace-nowrap">{item.name}</div>
+          <div className="relative overflow-hidden">
+            <motion.div
+              className="text-[12px] text-neutral-300 whitespace-nowrap"
+              animate={{ x: isHovered ? [-0, -50, 0] : 0 }}
+              transition={{ duration: 8, repeat: isHovered ? Infinity : 0, ease: "linear" }}
+            >
+              {item.sub}
+            </motion.div>
+          </div>
+        </div>
+        <YearsBadge />
+      </div>
+    </li>
+  );
+}
+
+
+/** Card that glows on hover; rows highlight individually on hover */
+function SkillsCard({ section }) {
+  return (
+    <div
+      className="group rounded-3xl border border-white/10 bg-white/5 p-5 sm:p-6
+                 shadow-[0_10px_40px_rgba(0,0,0,0.35)]
+                 transition
+                 hover:border-red-500/30
+                 hover:shadow-[0_0_0_1px_rgba(229,9,20,.25),0_24px_80px_rgba(229,9,20,.18)]"
+    >
+      <div className="mb-3 flex items-center gap-2">
+        <div className="grid h-8 w-8 place-items-center rounded-xl bg-white/10 text-lg">{section.icon}</div>
+        <h4 className="text-lg font-semibold text-white">{section.title}</h4>
+      </div>
+      <ul className="space-y-2">
+        {section.items.map((it) => (
+          <SkillRow key={it.k + it.name} item={it} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** Full Technical Expertise block (used in both main Skills section & the Skills modal) */
+function TechnicalExpertise() {
+  const [PL, ETL, CLOUD, DEV] = SKILL_SECTIONS;
+
+  return (
+    <div>
+      <div className="mb-2">
+        <h3 className="text-2xl font-extrabold text-white sm:text-3xl">Technical Expertise</h3>
+        <p className="mt-1 text-sm text-neutral-400">
+          Technologies I've used in real-world projects and professional environments.
+        </p>
+      </div>
+
+      {/* 1 col (mobile) → 2 cols (md) → 3 cols (lg+) */}
+      <div className="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start">
+        {/* Col 1: Programming Languages */}
+        <div className="h-full">
+          <SkillsCard section={PL} />
+        </div>
+
+        {/* Col 2: Data Integration / ETL */}
+        <div className="h-full">
+          <SkillsCard section={ETL} />
+        </div>
+
+        {/* Col 3: Cloud (top) + Developer Tools (below) */}
+        <div className="flex flex-col gap-4 sm:gap-5">
+          <SkillsCard section={CLOUD} />
+          <SkillsCard section={DEV} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 /* ===== Experience timeline ===== */
 function ExperienceTimeline({ items, scrollMode = "window" }) {
@@ -340,15 +555,22 @@ function ExperienceTimeline({ items, scrollMode = "window" }) {
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3 text-white">
                         {logo ? (
-                          <img
-                            src={logo}
-                            alt=""
-                            className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-contain bg-white/5 border border-white/10 p-1.5"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <IconBriefcase className="text-red-400 h-6 w-6" />
-                        )}
+  <img
+    src={logo}
+    alt=""
+    className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-contain
+               bg-white border border-black/10 p-1.5
+               shadow-[0_2px_8px_rgba(0,0,0,0.25)]"
+    loading="lazy"
+    decoding="async"
+  />
+) : (
+  <div className="grid h-12 w-12 sm:h-14 sm:w-14 place-items-center rounded-xl
+                  bg-white border border-black/10 shadow-[0_2px_8px_rgba(0,0,0,0.25)]">
+    <IconBriefcase className="h-6 w-6 text-neutral-700" />
+  </div>
+)}
+
                         <div className="text-xl sm:text-2xl font-semibold leading-tight">{e.role}</div>
                       </div>
                       {e.type && (
@@ -479,7 +701,7 @@ function SparkieChat({ onClose }) {
     {
       role: "bot",
       text:
-        `Hi! I’m Sparkie. Ask about education, visa status, a short summary, skills — or say “tell me a joke”.`,
+        `Hi! I'm Sparkie. Ask about education, visa status, a short summary, skills — or say "tell me a joke".`,
       typewriter: true,
     },
   ]);
@@ -531,7 +753,7 @@ function SparkieChat({ onClose }) {
           <div className="grid h-7 w-7 place-items-center rounded-md bg-red-600 text-base">⚡</div>
           <div>
             <div className="font-semibold text-white text-lg md:text-xl">Sparkie • AI Assistant</div>
-            <div className="text-[11px] md:text-xs text-neutral-300">Showcasing Ganesh&apos;s expertise</div>
+            <div className="text-[11px] md:text-xs text-neutral-300">Showcasing Ganesh's expertise</div>
           </div>
         </div>
         <button
@@ -964,41 +1186,82 @@ function QuickLookRail({ onOpenModal }) {
 /* ===== Modal content ===== */
 function ModalBody({ id }) {
   if (id === "home") {
-    return (
-      <div className="space-y-3">
-        <h3 className="text-xl font-bold text-white">About me</h3>
-        <p className="text-sm text-neutral-300">{PROFILE.summary}</p>
-        <ul className="text-sm text-neutral-300 space-y-1">
-          <li>
-            Email:{" "}
-            <a className="text-red-400 underline" href={`mailto:${PROFILE.links.email}`}>
-              {PROFILE.links.email}
-            </a>
-          </li>
-          <li>
-            LinkedIn:{" "}
-            <a className="text-red-400 underline" href={PROFILE.links.linkedin} target="_blank" rel="noreferrer">
-              {PROFILE.links.linkedin}
-            </a>
-          </li>
-          <li>
-            GitHub:{" "}
-            <a className="text-red-400 underline" href={PROFILE.links.github} target="_blank" rel="noreferrer">
-              {PROFILE.links.github}
-            </a>
-          </li>
-        </ul>
+  return (
+    <div>
+      {/* top headings mimic the reference */}
+      <div className="mb-6 grid gap-6 lg:grid-cols-[1.15fr_1fr]">
+        {/* LEFT — avatar + My Journey */}
+        <div className="space-y-4">
+          {/* big round photo next to heading */}
+          <div className="flex items-center gap-4">
+            <img
+              src={PROFILE.avatar}
+              alt="Ganesh portrait"
+              className="h-24 w-24 sm:h-28 sm:w-28 rounded-full object-cover
+                         border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.35)]
+                         ring-4 ring-red-500/10"
+              loading="lazy"
+              decoding="async"
+            />
+            <h3 className="text-3xl font-extrabold text-white">My Journey</h3>
+          </div>
+
+          {/* story paragraphs */}
+          <div className="space-y-4 text-[15px] leading-relaxed">
+            <p className="text-neutral-200">
+              I build reliable, observable data platforms on <span className="font-semibold text-white">Databricks + Delta/Lakehouse</span>,
+              with strong <span className="font-semibold text-white">SQL/Python</span>, data modeling, and governance delivering end to end
+              pipelines and BI that teams actually use.
+            </p>
+            <p className="text-neutral-300">
+              My journey has been about impact: speeding up pipelines (up to <span className="font-semibold text-white">57%</span>),
+              hardening quality with <span className="font-semibold text-white">Unity Catalog</span>, and shipping iteratively with clear docs
+              and observability.
+            </p>
+            <p className="text-neutral-300">
+              When I’m off the clock, I’m at the <span className="font-semibold text-white">gym</span>, out on a <span className="font-semibold text-white">trail/hike</span>,
+              or saying yes to the next <span className="font-semibold text-white">adventure</span>.
+            </p>
+          </div>
+        </div>
+
+        {/* RIGHT — How I Work */}
+        <div className="space-y-4">
+          <h3 className="text-3xl font-extrabold text-white">How I Work</h3>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <WorkTile
+              icon={<IconCode2 className="h-5 w-5" />}
+              title="Clean Code"
+              text="Maintainable, testable pipelines with clear models, docs & alerts."
+            />
+            <WorkTile
+              icon={<IconBulb className="h-5 w-5" />}
+              title="Innovation"
+              text="Stay ahead on data tooling and apply it pragmatically to deliver value."
+            />
+            <WorkTile
+              icon={<IconUsers2 className="h-5 w-5" />}
+              title="Collaboration"
+              text="Translate business goals into data that analysts & engineers can use."
+            />
+            <WorkTile
+              icon={<IconBolt2 className="h-5 w-5" />}
+              title="Performance"
+              text="Optimize costs & runtimes with smart partitioning, caching, and design."
+            />
+          </div>
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
+
 
   if (id === "skills") {
-    return (
-      <div>
-        <h3 className="mb-2 text-xl font-bold text-white">Skills</h3>
-        <p className="text-sm leading-relaxed text-neutral-300">{PROFILE.skills}</p>
-      </div>
-    );
+    // Use the *same* component the main page uses to keep everything in sync
+    return <TechnicalExpertise />;
   }
 
   if (id === "experience") {
@@ -1116,7 +1379,8 @@ function Modal({ id, onClose }) {
             >
               ✕
             </button>
-            <div className="max-h-[76vh] overflow-hidden">
+            {/* FIX: allow scrolling within modal content */}
+            <div className="max-h-[76vh] overflow-auto pr-1">
               <ModalBody id={id} />
             </div>
           </motion.div>
@@ -1125,6 +1389,86 @@ function Modal({ id, onClose }) {
     </AnimatePresence>
   );
 }
+
+function WavingHand({ className = "" }) {
+  return (
+    <motion.span
+      role="img"
+      aria-label="waving hand"
+      className={`inline-block align-baseline select-none ${className}`}
+      style={{ transformOrigin: "70% 70%" }}  // pivot near the wrist
+      animate={{ rotate: [0, 14, -8, 14, 0] }}
+      transition={{
+        duration: 1.8,
+        ease: "easeInOut",
+        repeat: Infinity,
+        repeatDelay: 1.4,
+      }}
+    >
+      👋
+    </motion.span>
+  );
+}
+
+/* ===== Mini icons (clean, light SVGs) ===== */
+const IconCode2 = (p) => (
+  <svg viewBox="0 0 24 24" className={`h-5 w-5 ${p.className||""}`} fill="none" stroke="currentColor" strokeWidth="1.8">
+    <path d="M9 18l-6-6 6-6" /><path d="M15 6l6 6-6 6" />
+  </svg>
+);
+const IconBulb = (p) => (
+  <svg viewBox="0 0 24 24" className={`h-5 w-5 ${p.className||""}`} fill="none" stroke="currentColor" strokeWidth="1.8">
+    <path d="M9 18h6" /><path d="M10 22h4" />
+    <path d="M12 2a7 7 0 0 0-4 12c.7.7 1 1.7 1 2.8V18h6v-1.2c0-1.1.3-2.1 1-2.8A7 7 0 0 0 12 2z"/>
+  </svg>
+);
+const IconUsers2 = (p) => (
+  <svg viewBox="0 0 24 24" className={`h-5 w-5 ${p.className||""}`} fill="none" stroke="currentColor" strokeWidth="1.8">
+    <path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
+);
+const IconBolt2 = (p) => (
+  <svg viewBox="0 0 24 24" className={`h-5 w-5 ${p.className||""}`} fill="none" stroke="currentColor" strokeWidth="1.8">
+    <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
+  </svg>
+);
+
+
+function WorkTile({ icon, title, text }) {
+  return (
+    <div
+      className="group relative overflow-hidden rounded-2xl
+                 border border-white/10 bg-gradient-to-br from-white/[0.035] to-white/[0.02]
+                 p-5 sm:p-6 transition-all duration-300
+                 hover:-translate-y-1.5 hover:border-red-400/40
+                 hover:shadow-[0_18px_70px_rgba(229,9,20,0.22),0_0_0_1px_rgba(229,9,20,0.22)]"
+    >
+      {/* soft radial glow on hover */}
+      <span
+        className="pointer-events-none absolute -top-1/4 -left-1/4 h-[220%] w-[220%] rounded-full
+                   opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(60% 40% at 25% 0%, rgba(229,9,20,0.20), transparent 55%)",
+        }}
+        aria-hidden
+      />
+
+      <div className="relative z-10 flex items-center gap-3">
+        <div className="grid h-10 w-10 place-items-center rounded-xl
+                        bg-gradient-to-br from-red-500 to-rose-600 text-white shadow
+                        ring-1 ring-white/10">
+          {icon}
+        </div>
+        <div className="text-lg font-semibold text-white">{title}</div>
+      </div>
+      <p className="relative z-10 mt-2 text-sm text-neutral-300">{text}</p>
+    </div>
+  );
+}
+
 
 /* ===== App ===== */
 export default function NewNetflix() {
@@ -1209,8 +1553,13 @@ export default function NewNetflix() {
             <section id="home" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
               <div className="text-center">
                 <h1 className="text-4xl font-extrabold text-white sm:text-6xl">
-                  Hi, I’m <span className="text-red-500">{PROFILE.name}</span>
-                </h1>
+  <span className="inline-flex items-center gap-2">
+    <span>Hi,</span>
+    <WavingHand className="text-4xl sm:text-6xl" />
+  </span>{" "}
+  I&apos;m <span className="text-red-500">{PROFILE.name}</span>
+</h1>
+
                 <p className="mt-3 text-xl text-neutral-300">
                   <RoleWheel />
                 </p>
@@ -1220,10 +1569,9 @@ export default function NewNetflix() {
               <QuickLookRail onOpenModal={(id) => setModal(id)} />
             </section>
 
-            {/* MAIN CONTENT */}
+            {/* SKILLS (now identical to modal content for perfect sync) */}
             <section id="skills" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-              <h2 className="mb-4 text-2xl font-bold text-white">Skills</h2>
-              <p className="max-w-4xl leading-relaxed text-neutral-300">{PROFILE.skills}</p>
+              <TechnicalExpertise />
             </section>
 
             <section id="projects" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
@@ -1250,9 +1598,9 @@ export default function NewNetflix() {
               </div>
             </section>
 
-            <Section id="experience" title="Experience">
+            <section id="experience" title="Experience">
               <ExperienceTimeline items={PROFILE.experience} scrollMode="window" />
-            </Section>
+            </section>
 
             <section id="certs" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
               <h2 className="mb-4 text-2xl font-bold text-white">Certifications</h2>
