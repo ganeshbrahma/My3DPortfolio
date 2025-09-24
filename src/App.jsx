@@ -1602,9 +1602,15 @@ export default function NewNetflix() {
               </div>
             </section>
 
-            <section id="experience" title="Experience">
-              <ExperienceTimeline items={PROFILE.experience} scrollMode="window" />
-            </section>
+            <section id="experience" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+  <div className="mb-8 text-center">
+    <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Experience</h2>
+    <p className="mt-2 text-sm text-neutral-400">
+      Designing data platforms, accelerating pipelines, and shipping cloud-first solutions.
+    </p>
+  </div>
+  <ExperienceTimeline items={PROFILE.experience} scrollMode="window" />
+</section>
 
             <section id="certs" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
               <h2 className="mb-4 text-2xl font-bold text-white">Certifications</h2>
