@@ -3,7 +3,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./index.css";
 
-const asset = (p) => import.meta.env.BASE_URL + p;
+const asset = (p) => {
+  const base = import.meta.env.BASE_URL || "/";
+  return (base.endsWith("/") ? base.slice(0, -1) : base) + p; // avoids double slashes
+};
 
 /* ===== Content ===== */
 const PROFILE = {
