@@ -3,6 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./index.css";
 
+const asset = (p) => import.meta.env.BASE_URL + p;
+
 /* ===== Content ===== */
 const PROFILE = {
   name: "Ganesh",
@@ -243,7 +245,6 @@ const IconPin = (props) => (
     <circle cx="12" cy="10" r="3" />
   </svg>
 );
-const asset = (p) => import.meta.env.BASE_URL + p;
 
 /* ===== Company logos (add your files under /public/logos) ===== */
 const COMPANY_LOGOS = {
