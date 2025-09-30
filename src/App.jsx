@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./index.css";
 
+
 const asset = (p) => {
   const base = import.meta.env.BASE_URL || "/";
   return (base.endsWith("/") ? base.slice(0, -1) : base) + p; // avoids double slashes
@@ -19,28 +20,46 @@ const PROFILE = {
     email: "ganeshbrahma304@gmail.com",
     linkedin: "https://www.linkedin.com/in/ganeshbrahma/",
     github: "https://github.com/ganeshbrahma",
+    resume: asset("/resume/Ganesh_Kollapudi_Resume.pdf"),
   },
   skills:
     "Python, PySpark, Java, SQL, PL/SQL, Scala, Linux, Spark SQL, BigQuery • Spark, Hive, Sqoop, Hadoop, Databricks, Azure Data Factory, Airflow, Unity Catalog, Terraform • Azure (ADLS, Synapse, Blob, HDInsight), AWS (Lambda, S3, Glue, Redshift, Athena), GCP • Power BI, GitLab/Jenkins CI/CD",
   projects: [
+    {
+      name: "My 3D Portfolio",
+      stack: "React, Tailwind CSS, Framer Motion, Vite, GitHub Pages, Node.js",
+      time: "Sep 2025",
+      repo: "https://github.com/ganeshbrahma/My3DPortfolio",  // update link if different
+      bullets: [
+        "This portfolio itself was designed as a Netflix inspired interactive site to showcase my projects, skills, and experience in an engaging format.",
+        "Built the front-end with React, Tailwind CSS, and Framer Motion for smooth animations, neon hover effects, and responsive design.",
+        "Set up Vite for fast development and optimized builds, and deployed via GitHub Pages for lightweight hosting.",
+        "Engineered modular card style sections for Projects, Skills, and Experience, each with glossy hover states, neon glows, and smooth modal transitions.",
+        "Integrated **GPT-5** through a custom assistant called *Sparkie Bot*, which dynamically answers visitor questions about my education, skills, and experience.",
+        "Implemented Sparkie by feeding it structured profile data and wiring it into the UI with Node.js and APIs — showcasing practical AI/ML integration within a portfolio project."
+      ]
+    },
     {
       name: "MailMatrix",
       stack: "Python, Flask, AWS Lambda, SES, S3, EventBridge, MySQL",
       time: "Jan 2025",
       repo: "https://github.com/ganeshbrahma/MailMatrix",
       bullets: [
-        "Flask app + Lambda backend to send bulk, conditional emails via SES triggered by S3 uploads.",
-        "Auth, file uploads, email history (MySQL). EventBridge + CloudWatch for automation/monitoring.",
+        "This project aimed to streamline bulk and conditional email communication in organizations where manual triggers often led to errors and delays.",
+        "Our objective was to design a lightweight, serverless pipeline using Flask and AWS Lambda that ingests files from S3, applies business rules, and dispatches emails via SES.",
+        "To ensure compliance and traceability, we integrated MySQL for email history and authentication, while EventBridge + CloudWatch handled automation, retries, and monitoring.",
+        "The outcome minimized operational overhead and reduced errors in large scale email campaigns, letting teams focus more on messaging strategy than infrastructure troubleshooting."
       ],
     },
     {
       name: "AviationProject",
-      stack: "MySQL, Hadoop, Cloudera, Spark, Hive, HBase, Sqoop, Tableau",
+      stack: "Spark, Kafka, Java, MySQL, Cloudera, Hive, HBase, Sqoop, Tableau",
       time: "Jun 2020",
       repo: "https://github.com/ganeshbrahma/AviationProject",
       bullets: [
-        "MySQL → Hadoop migration with batch & stream (Spark/Flink).",
-        "ETL to Hive/HBase; dashboards in Tableau/Power BI.",
+        "This project tackled the challenge of migrating and analyzing large volumes of airport operations data, where legacy systems lacked the scalability needed for real-time insights.","We migrated relational data from MySQL into Hadoop using Sqoop, enabling both batch and streaming pipelines with Spark/Flink.",
+        "Processed data was stored in Hive for warehousing and HBase for NoSQL access, ensuring flexible querying options.",
+        "Finally, insights were delivered through Tableau/Power BI dashboards, empowering business stakeholders to monitor KPIs like passenger traffic and flight operations with much greater accuracy and timeliness."
       ],
     },
   ],
@@ -214,6 +233,11 @@ function useBotBrain() {
         s: score(q, ["visa", "authorization", "opt", "status", "sponsorship"]),
         a: "Currently on F-1 OPT (work authorized). Open to full-time roles; start date flexible.",
       },
+      {
+        k: "resume",
+        s: score(q, ["resume", "cv", "curriculum", "download", "pdf"]),
+        a: `You can view or download my Resume here: ${PROFILE.links.resume}`,
+      },
       { k: "summary", s: score(q, ["about", "summary", "introduce", "who are you"]), a: PROFILE.summary },
       { k: "skills", s: score(q, ["skills", "stack", "tech", "tooling"]), a: "Core skills: " + PROFILE.skills },
       { k: "joke", s: score(q, ["joke", "funny", "laugh", "lol"]), a: jokes[Math.floor(Math.random() * jokes.length)] },
@@ -248,6 +272,7 @@ const IconPin = (props) => (
     <circle cx="12" cy="10" r="3" />
   </svg>
 );
+/*const asset = (p) => import.meta.env.BASE_URL + p;
 
 /* ===== Company logos (add your files under /public/logos) ===== */
 const COMPANY_LOGOS = {
@@ -480,10 +505,21 @@ function TechnicalExpertise() {
 }
 
 
-/* ===== Experience timeline ===== */
+/* ===== Experience timeline (glossy + neon, clipped) ===== */
 function ExperienceTimeline({ items, scrollMode = "window" }) {
   const containerRef = useRef(null);
   const [progress, setProgress] = useState(0);
+
+  // NEW: which card is hovered (for glow/border)
+  const [hovered, setHovered] = useState(null);
+
+  // Neon palettes (same vibe as ProjectCard)
+  const NEON = {
+    blue:   { accent: "rgba(56,189,248,0.55)",  shadow: "rgba(56,189,248,0.28)",  radial: "rgba(56,189,248,0.22)" },
+    pink:   { accent: "rgba(236,72,153,0.55)",  shadow: "rgba(236,72,153,0.28)",  radial: "rgba(236,72,153,0.22)" },
+    red:    { accent: "rgba(239,68,68,0.60)",   shadow: "rgba(239,68,68,0.30)",   radial: "rgba(239,68,68,0.24)"  },
+    yellow: { accent: "rgba(250,204,21,0.65)",  shadow: "rgba(250,204,21,0.30)",  radial: "rgba(250,204,21,0.22)" },
+  };
 
   useEffect(() => {
     const el = containerRef.current;
@@ -534,6 +570,12 @@ function ExperienceTimeline({ items, scrollMode = "window" }) {
           {items.map((e, idx) => {
             const right = idx % 2 === 0;
             const logo = getLogo(e.company);
+
+            // Alternate neon tones (allow e.color override)
+            const toneKey = e.color || (idx % 3 === 0 ? "pink" : idx % 3 === 1 ? "blue" : "red");
+            const T = NEON[toneKey] || NEON.pink;
+            const isHover = hovered === idx;
+
             return (
               <div key={`${e.company}-${idx}`} className="relative">
                 {/* node */}
@@ -545,74 +587,107 @@ function ExperienceTimeline({ items, scrollMode = "window" }) {
                   <div className={`${right ? "hidden sm:block" : ""}`} />
                   <div className="hidden sm:block" />
 
-                  {/* card */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                    viewport={{ once: true, amount: 0.3 }}
-                    transition={{ type: "spring", damping: 22, stiffness: 220 }}
-                    className={`rounded-3xl border border-white/10 bg-white/5 p-7 sm:p-8 text-[16px] text-neutral-300 shadow-[0_20px_60px_rgba(0,0,0,0.35)] ${
-                      right ? "" : "sm:order-first"
-                    }`}
+                  {/* Glossy + neon wrapper with CLIP to prevent bleed */}
+                  <div
+                    className="group relative"
+                    onMouseEnter={() => setHovered(idx)}
+                    onMouseLeave={() => setHovered(null)}
                   >
-                    {/* header */}
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3 text-white">
-                        {logo ? (
-  <img
-    src={logo}
-    alt=""
-    className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-contain
-               bg-white border border-black/10 p-1.5
-               shadow-[0_2px_8px_rgba(0,0,0,0.25)]"
-    loading="lazy"
-    decoding="async"
-  />
-) : (
-  <div className="grid h-12 w-12 sm:h-14 sm:w-14 place-items-center rounded-xl
-                  bg-white border border-black/10 shadow-[0_2px_8px_rgba(0,0,0,0.25)]">
-    <IconBriefcase className="h-6 w-6 text-neutral-700" />
-  </div>
-)}
+                    {/* CLIP LAYER (keeps glow and sheen inside rounded card) */}
+                    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-3xl">
+                      {/* radial neon glow (clipped) */}
+                      <span
+                        className="absolute -top-1/3 -left-1/3 h-[220%] w-[220%]
+                                   opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                        style={{ background: `radial-gradient(55% 40% at 25% 0%, ${T.radial}, transparent 55%)` }}
+                      />
+                      {/* animated sheen (clipped) */}
+                      <span
+                        aria-hidden
+                        className="absolute inset-0 -translate-x-full
+                                   bg-[linear-gradient(115deg,transparent,rgba(255,255,255,.14),transparent)]
+                                   mix-blend-screen opacity-0 transition-all duration-700
+                                   group-hover:opacity-100 group-hover:translate-x-full"
+                      />
+                    </div>
 
-                        <div className="text-xl sm:text-2xl font-semibold leading-tight">{e.role}</div>
+                    {/* CARD CONTENT (same as before) */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                      viewport={{ once: true, amount: 0.3 }}
+                      transition={{ type: "spring", damping: 22, stiffness: 220 }}
+                      className={`relative z-10 rounded-3xl border border-white/10 bg-white/5 p-7 sm:p-8 text-[16px] text-neutral-300 shadow-[0_20px_60px_rgba(0,0,0,0.35)] ${
+                        right ? "" : "sm:order-first"
+                      }`}
+                      style={{
+                        boxShadow: isHover
+                          ? `0 0 0 1px ${T.accent}, 0 28px 90px ${T.shadow}`
+                          : undefined,
+                        borderColor: isHover ? T.accent : undefined,
+                        transform: isHover ? "translateY(-4px)" : undefined,
+                        transition: "box-shadow 300ms, transform 300ms, border-color 300ms",
+                      }}
+                    >
+                      {/* header */}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3 text-white">
+                          {logo ? (
+                            <img
+                              src={logo}
+                              alt=""
+                              className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl object-contain
+                                         bg-white border border-black/10 p-1.5
+                                         shadow-[0_2px_8px_rgba(0,0,0,0.25)]"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          ) : (
+                            <div className="grid h-12 w-12 sm:h-14 sm:w-14 place-items-center rounded-xl
+                                            bg-white border border-black/10 shadow-[0_2px_8px_rgba(0,0,0,0.25)]">
+                              <IconBriefcase className="h-6 w-6 text-neutral-700" />
+                            </div>
+                          )}
+
+                          <div className="text-xl sm:text-2xl font-semibold leading-tight">{e.role}</div>
+                        </div>
+                        {e.type && (
+                          <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs sm:text-sm text-neutral-300">
+                            {e.type}
+                          </span>
+                        )}
                       </div>
-                      {e.type && (
-                        <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs sm:text-sm text-neutral-300">
-                          {e.type}
+
+                      {/* company */}
+                      <div className="mt-2 text-red-300 font-semibold text-base sm:text-lg">{e.company}</div>
+
+                      {/* meta */}
+                      <div className="mt-2 flex flex-wrap items-center gap-5 text-sm text-neutral-400">
+                        <span className="inline-flex items-center gap-1.5">
+                          <IconCalendar className="text-neutral-500 h-4 w-4" /> {e.timeRange}
                         </span>
-                      )}
-                    </div>
-
-                    {/* company */}
-                    <div className="mt-2 text-red-300 font-semibold text-base sm:text-lg">{e.company}</div>
-
-                    {/* meta */}
-                    <div className="mt-2 flex flex-wrap items-center gap-5 text-sm text-neutral-400">
-                      <span className="inline-flex items-center gap-1.5">
-                        <IconCalendar className="text-neutral-500 h-4 w-4" /> {e.timeRange}
-                      </span>
-                      <span className="inline-flex items-center gap-1.5">
-                        <IconPin className="text-neutral-500 h-4 w-4" /> {e.location}
-                      </span>
-                    </div>
-
-                    {/* bullets */}
-                    <ul className="mt-4 list-disc space-y-1.5 pl-5 leading-relaxed">
-                      {e.bullets.map((b, i) => (
-                        <li key={i}>{b}</li>
-                      ))}
-                    </ul>
-
-                    {/* tags */}
-                    {!!e.tags?.length && (
-                      <div className="mt-5 flex flex-wrap gap-2.5">
-                        {e.tags.map((t) => (
-                          <SkillPill key={t}>{t}</SkillPill>
-                        ))}
+                        <span className="inline-flex items-center gap-1.5">
+                          <IconPin className="text-neutral-500 h-4 w-4" /> {e.location}
+                        </span>
                       </div>
-                    )}
-                  </motion.div>
+
+                      {/* bullets */}
+                      <ul className="mt-4 list-disc space-y-1.5 pl-5 leading-relaxed">
+                        {e.bullets.map((b, i) => (
+                          <li key={i}>{b}</li>
+                        ))}
+                      </ul>
+
+                      {/* tags */}
+                      {!!e.tags?.length && (
+                        <div className="mt-5 flex flex-wrap gap-2.5">
+                          {e.tags.map((t) => (
+                            <SkillPill key={t}>{t}</SkillPill>
+                          ))}
+                        </div>
+                      )}
+                    </motion.div>
+                  </div>
                 </div>
               </div>
             );
@@ -622,6 +697,7 @@ function ExperienceTimeline({ items, scrollMode = "window" }) {
     </div>
   );
 }
+
 
 function SparkieFloating({ open, setOpen }) {
   const [sparks, setSparks] = useState([]);
@@ -699,13 +775,64 @@ function SparkieFloating({ open, setOpen }) {
   );
 }
 
+/* ===== Make plain-text URLs clickable in chat (show filename for PDFs/paths) ===== */
+function linkify(text) {
+  // Split on absolute URLs or root-relative paths
+  const splitRe = /(https?:\/\/[^\s]+|\/[^\s]+(?:\.[^\s]+)?)/g;
+  // Non-global test for a single token
+  const testRe  = /^(https?:\/\/[^\s]+|\/[^\s]+(?:\.[^\s]+)?)$/i;
+
+  const parts = String(text).split(splitRe);
+
+  return parts.map((part, i) => {
+    if (!testRe.test(part)) return <span key={i}>{part}</span>;
+
+    const href = part; // keep full link target
+
+    // Derive a nice display text:
+    // - If it's a path or a URL with a filename, show the filename (e.g. Ganesh_Kollapudi_Resume.pdf)
+    // - Else fall back to the raw text
+    let display = part;
+    try {
+      const url = new URL(part, window.location.origin); // handles root-relative too
+      const last = url.pathname.split("/").pop();
+      if (last && /\.[a-z0-9]+$/i.test(last)) {
+        // has an extension => looks like a file
+        display = last;
+      }
+    } catch {
+      // If it's not a valid URL (shouldn't happen with our regex), try a simple split
+      const last = part.split("/").pop();
+      if (last && /\.[a-z0-9]+$/i.test(last)) display = last;
+    }
+
+    const isPdf = /\.pdf(\?|#|$)/i.test(href);
+
+    return (
+      <a
+        key={i}
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        className="underline decoration-red-400/70 hover:text-white hover:decoration-red-400"
+        download={isPdf ? "" : undefined}
+      >
+        {display}
+      </a>
+    );
+  });
+}
+
+
+
+
 function SparkieChat({ onClose }) {
   const { answer } = useBotBrain();
   const [messages, setMessages] = useState([
     {
       role: "bot",
       text:
-        `Hi! I'm Sparkie. Ask about education, visa status, a short summary, skills — or say "tell me a joke".`,
+        `Hi! I'm Sparkie. Ask me about experience, education, resume, a short summary, visa status, skills — or say "tell me a joke".`,
       typewriter: true,
     },
   ]);
@@ -735,19 +862,23 @@ function SparkieChat({ onClose }) {
   }, [messages, thinking]);
 
   function send(qIn) {
-    const mapped = qIn === "joke" ? "tell me a joke" : qIn;
-    const q = (mapped ?? input).trim();
-    if (!q) return;
+  const mapped = qIn === "joke" ? "tell me a joke" : qIn;
+  const q = (mapped ?? input).trim();
+  if (!q) return;
 
-    setMessages((m) => [...m, { role: "user", text: q }]);
-    setInput("");
-    setThinking(true);
-    setTimeout(() => {
-      const reply = answer(q);
-      setMessages((m) => [...m, { role: "bot", text: reply, typewriter: true }]);
-      setThinking(false);
-    }, 700);
-  }
+  setMessages((m) => [...m, { role: "user", text: q }]);
+  setInput("");
+  setThinking(true);
+  setTimeout(() => {
+    const reply = answer(q);
+    const hasLink = /(https?:\/\/[^\s]+|\/[^\s]+\.pdf(?:[?#][^\s]+)?)/i.test(reply);
+    setMessages((m) => [
+      ...m,
+      { role: "bot", text: reply, typewriter: !hasLink }, // no typewriter if it has a link
+    ]);
+    setThinking(false);
+  }, 700);
+}
 
   return (
     <>
@@ -782,7 +913,7 @@ function SparkieChat({ onClose }) {
               }`}
               style={{ maxWidth: "85%" }}
             >
-              {m.typewriter ? <Typewriter text={m.text} /> : m.text}
+              {m.typewriter ? <Typewriter text={m.text} /> : linkify(m.text)}
             </div>
           </div>
         ))}
@@ -1108,6 +1239,7 @@ const HUB_IMAGES = {
   certs: asset("/cards/certs.png"),
   contact: asset("/cards/contact.jpg"),
   projects: asset("/cards/projects.png"),
+  resume: asset("/cards/resume.png"),
 };
 
 /* ===== Quick Look rail ===== */
@@ -1119,6 +1251,7 @@ function QuickLookRail({ onOpenModal }) {
     { id: "projects", label: "Projects", hint: "Selected work" },
     { id: "certs", label: "Certifications", hint: "Credentials" },
     { id: "contact", label: "Contact", hint: "Reach out" },
+    { id: "resume", label: "Resume", hint: "PDF download" },
   ];
 
   const scrollerRef = useRef(null);
@@ -1186,6 +1319,121 @@ function QuickLookRail({ onOpenModal }) {
     </div>
   );
 }
+
+/* ===== ProjectCard (glossy card + neon hover) ===== */
+function ProjectCard({ p, variant = "pink" }) {
+  // allow per-project override via p.color: "pink" | "blue"
+  const tone = (p.color || variant);
+
+  // neon palettes (tuned to look vivid on dark / Netflix theme)
+  const NEON = {
+    blue: {
+      accent: "rgba(56,189,248,0.55)",   // cyan-400
+      shadow: "rgba(56,189,248,0.28)",
+      radial: "rgba(56,189,248,0.22)",
+    },
+    pink: {
+      accent: "rgba(236,72,153,0.55)",   // pink-500
+      shadow: "rgba(236,72,153,0.28)",
+      radial: "rgba(236,72,153,0.22)",
+    },
+    red: { 
+    accent: "rgba(239,68,68,0.60)",
+    shadow: "rgba(239,68,68,0.30)",
+    radial: "rgba(239,68,68,0.24)"  
+    },
+    yellow: { accent: "rgba(250,204,21,0.65)",  shadow: "rgba(250,204,21,0.30)",  radial: "rgba(250,204,21,0.22)" }, // yellow-400
+
+  }[tone] || { accent: "rgba(236,72,153,0.55)", shadow: "rgba(236,72,153,0.28)", radial: "rgba(236,72,153,0.22)" };;
+
+  const [hover, setHover] = useState(false);
+  const tags = (p.stack || "").split(",").map((t) => t.trim()).filter(Boolean);
+
+  return (
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className="group relative overflow-hidden rounded-[26px]
+                 border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.02]
+                 backdrop-blur-md p-5 sm:p-6
+                 shadow-[0_20px_60px_rgba(0,0,0,0.35)]
+                 transition-all duration-300"
+      style={{
+        // neon outline + long shadow only when hovered, keeps Tailwind tidy
+        boxShadow: hover
+          ? `0 0 0 1px ${NEON.accent}, 0 28px 90px ${NEON.shadow}`
+          : undefined,
+        borderColor: hover ? NEON.accent : undefined,
+        transform: hover ? "translateY(-4px)" : undefined,
+      }}
+    >
+      {/* soft radial neon glow */}
+      <span
+        className="pointer-events-none absolute -top-1/3 -left-1/3 h-[220%] w-[220%] rounded-full
+                   opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background: `radial-gradient(55% 40% at 25% 0%, ${NEON.radial}, transparent 55%)`,
+        }}
+      />
+
+      {/* animated sheen */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -translate-x-full
+                   bg-[linear-gradient(115deg,transparent,rgba(255,255,255,.14),transparent)]
+                   mix-blend-screen opacity-0 transition-all duration-700
+                   group-hover:opacity-100 group-hover:translate-x-full"
+      />
+
+      {/* Hover GitHub button (keeps neon ring) */}
+      <a
+      href={p.repo}                // << repo from your PROFILE.projects
+        target="_blank"
+        rel="noreferrer"
+        aria-label={`Open ${p.name} on GitHub`}
+        title="View on GitHub"
+        className="absolute right-4 top-4 z-20 inline-flex h-10 w-10 items-center justify-center
+        rounded-xl bg-white/10 text-white/80 ring-1 ring-white/10
+        opacity-0 transition-opacity duration-300
+        group-hover:opacity-100 focus:opacity-100 hover:bg-white/20 hover:text-white"
+      >
+        <IconGitHub className="h-5 w-5" />
+      </a>
+
+      {/* Title */}
+      <h4 className="relative z-10 text-xl sm:text-2xl font-extrabold leading-tight text-white">
+        {p.name}
+      </h4>
+
+      {/* Meta */}
+      <p className="relative z-10 mt-1 text-xs text-neutral-400">
+        {p.time}
+      </p>
+
+      {/* Tags */}
+      {!!tags.length && (
+        <div className="relative z-10 mt-3 flex flex-wrap gap-2">
+          {tags.map((t, i) => (
+            <span
+              key={i}
+              className="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-[12px] text-neutral-200"
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Bullets */}
+      {!!p.bullets?.length && (
+        <ul className="relative z-10 mt-4 list-disc space-y-1.5 pl-5 text-sm text-neutral-300">
+          {p.bullets.map((b, i) => <li key={i}>{b}</li>)}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 
 /* ===== Modal content ===== */
 function ModalBody({ id }) {
@@ -1287,28 +1535,14 @@ function ModalBody({ id }) {
       <div>
         <h3 className="mb-2 text-xl font-bold text-white">Projects</h3>
         <div className="grid gap-4 sm:grid-cols-2">
-          {PROFILE.projects.map((p) => (
-            <div key={p.name} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <div className="flex items-center justify-between">
-                <h4 className="text-lg font-semibold text-white">{p.name}</h4>
-                <a className="text-red-400 underline" href={p.repo} target="_blank" rel="noreferrer">
-                  repo
-                </a>
-              </div>
-              <p className="mt-1 text-xs text-neutral-400">
-                {p.stack} • {p.time}
-              </p>
-              <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-neutral-300">
-                {p.bullets.map((b, i) => (
-                  <li key={i}>{b}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {PROFILE.projects.map((p, i) => (
+            <ProjectCard key={p.name} p={p} variant={ i % 3 === 0 ? "pink" : i % 3 === 1 ? "blue" : "red" } />
+            ))}
         </div>
       </div>
-    );
+      );
   }
+
 
   if (id === "certs") {
     return (
@@ -1344,9 +1578,55 @@ function ModalBody({ id }) {
             linkedin.com/in/ganeshbrahma
           </a>
         </p>
+        <p>
+          Resume:{" "}
+          <a
+            className="text-red-400 underline"
+            href={PROFILE.links.resume}
+            target="_blank"
+            rel="noreferrer"
+          >
+            View / Download PDF
+          </a>
+        </p>
+      </div>
+      );
+  }
+
+    if (id === "resume") {
+    return (
+      <div>
+        <h3 className="mb-3 text-2xl font-extrabold text-white">Resume</h3>
+
+        <div className="mb-4 flex flex-wrap gap-3">
+          <a
+            href={PROFILE.links.resume}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-xl bg-white/10 px-4 py-2 text-sm text-neutral-100 hover:bg-white/20"
+          >
+            View PDF
+          </a>
+          <a
+            href={PROFILE.links.resume}
+            download
+            className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500"
+          >
+            Download
+          </a>
+        </div>
+
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+          <iframe
+            src={PROFILE.links.resume}
+            title="Ganesh Resume"
+            className="h-[72vh] w-full"
+          />
+        </div>
       </div>
     );
   }
+
   return null;
 }
 
@@ -1438,6 +1718,16 @@ const IconBolt2 = (p) => (
     <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
   </svg>
 );
+/* ===== Mini icon: GitHub ===== */
+const IconGitHub = (p) => (
+  <svg viewBox="0 0 24 24" className={`h-5 w-5 ${p.className||""}`} aria-hidden="true">
+    <path
+      fill="currentColor"
+      d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.11.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.35-1.29-1.71-1.29-1.71-1.06-.73.08-.72.08-.72 1.18.09 1.8 1.22 1.8 1.22 1.04 1.79 2.74 1.27 3.41.97.11-.76.41-1.27.75-1.56-2.55-.29-5.23-1.28-5.23-5.68 0-1.25.45-2.26 1.2-3.06-.12-.29-.52-1.45.11-3.02 0 0 .98-.31 3.21 1.17a11.1 11.1 0 0 1 5.84 0c2.23-1.48 3.2-1.17 3.2-1.17.64 1.57.24 2.73.12 3.02.75.8 1.2 1.81 1.2 3.06 0 4.41-2.69 5.38-5.25 5.67.42.36.8 1.07.8 2.17v3.22c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .5Z"
+    />
+  </svg>
+);
+
 
 
 function WorkTile({ icon, title, text }) {
@@ -1581,23 +1871,8 @@ export default function NewNetflix() {
             <section id="projects" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
               <h2 className="mb-4 text-2xl font-bold text-white">Projects</h2>
               <div className="grid gap-4 sm:grid-cols-2">
-                {PROFILE.projects.map((p) => (
-                  <div key={p.name} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-white">{p.name}</h3>
-                      <a className="text-red-400 underline" href={p.repo} target="_blank" rel="noreferrer">
-                        repo
-                      </a>
-                    </div>
-                    <p className="mt-1 text-xs text-neutral-400">
-                      {p.stack} • {p.time}
-                    </p>
-                    <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-neutral-300">
-                      {p.bullets.map((b, i) => (
-                        <li key={i}>{b}</li>
-                      ))}
-                    </ul>
-                  </div>
+                {PROFILE.projects.map((p, i) => (
+                  <ProjectCard key={p.name} p={p} variant={ i % 3 === 0 ? "pink" : i % 3 === 1 ? "blue" : "red" } />
                 ))}
               </div>
             </section>
@@ -1611,6 +1886,7 @@ export default function NewNetflix() {
   </div>
   <ExperienceTimeline items={PROFILE.experience} scrollMode="window" />
 </section>
+
 
             <section id="certs" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
               <h2 className="mb-4 text-2xl font-bold text-white">Certifications</h2>
@@ -1644,6 +1920,17 @@ export default function NewNetflix() {
                   GitHub:{" "}
                   <a className="text-red-400 underline" href={PROFILE.links.github} target="_blank" rel="noreferrer">
                     github.com/ganeshbrahma
+                  </a>
+                </li>
+                <li>
+                  Resume:{" "}
+                  <a
+                    className="text-red-400 underline"
+                    href={PROFILE.links.resume}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View / Download PDF
                   </a>
                 </li>
               </ul>
