@@ -1,5 +1,5 @@
 // src/NewNetflix.jsx
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./index.css";
 
@@ -15,7 +15,7 @@ const PROFILE = {
   title: "Data Engineer",
   avatar: asset("/avatar/ganesh.jpeg"),
   summary:
-    "I build reliable, observable data platforms with Spark/Databricks + Delta/Lakehouse, dbt and BI. Strong in SQL/Python, data modeling, and governance.",
+  "I am a Data Engineer with 4+ years across healthcare, insurance and retail. I build reliable lakehouse pipelines on Databricks/Spark + Delta, orchestrate with Airflow/ADF, and model data for BI (Power BI/Tableau). Strong in SQL/Python, data modeling, and governance (Unity Catalog) across AWS, Azure & GCP. Currently exploring opportunities always happy to connect.",
   links: {
     email: "ganeshbrahma304@gmail.com",
     linkedin: "https://www.linkedin.com/in/ganeshbrahma/",
@@ -211,13 +211,8 @@ function useBotBrain() {
         k: "standout",
         s: score(q, ["unique", "stand out", "standout", "strength", "differentiator", "developer"]),
         a:
-          "Here's what makes me unique:\n" +
-          "• Platform + analysis: I speed up pipelines (57% faster on Databricks) *and* turn results into BI that execs use.\n" +
-          "• Production-first: governance (Unity Catalog), DQ checks, observability—less rework, more trust.\n" +
-          "• Cloud range: Azure (ADLS/Synapse/ADF), Databricks, plus GCP BigQuery/Airflow/Terraform.\n" +
-          "• Fast ramp + delivery: I own ETL to dashboards, ship iteratively, and document clearly.\n" +
-          "• Collaborative: I translate business goals into data models people understand.",
-      },
+      "I bring a mix of technical depth and business focus. I’ve built data pipelines that run faster and more reliably, cutting runtimes by over 50% and improving data quality. I’ve worked in both healthcare, insurance and retail domains, so I know how to balance compliance with speed. I have hands on across Azure, Databricks, GCP and AWS, and I make it a point to explain technical work in simple terms so business teams can use it. What makes me different is that I don’t just deliver pipelines — I deliver solutions that actually move the needle for the business.",
+    },
       {
         k: "munichExperience",
         s: (score(q, ["munich"]) > 0 && (score(q, ["experience"]) > 0 || /expreience/i.test(q))) ? 3 : 0,
@@ -478,7 +473,7 @@ function TechnicalExpertise() {
       <div className="mb-2">
         <h3 className="text-2xl font-extrabold text-white sm:text-3xl">Technical Expertise</h3>
         <p className="mt-1 text-sm text-neutral-400">
-          Technologies I've used in real-world projects and professional environments.
+          Technologies I've used in real world projects and professional environments.
         </p>
       </div>
 
@@ -698,9 +693,60 @@ function ExperienceTimeline({ items, scrollMode = "window" }) {
   );
 }
 
+function PreOpenHints({ onAsk }) {
+  // label = what we show; query = what Sparkie should answer with
+  const hints = [
+    { label: "Hey there 👋 — Ask me about Ganesh’s skills ✨", query: "What are your core skills?" },
+    { label: "Hey there 👋 — Ask me a joke 😊",               query: "tell me a joke" },
+    { label: "Hey there 👋 — Ask me about experience 💼",      query: "Tell me about your experience" },
+    { label: "Hey there 👋 — Ask me about Visa status? ✨",     query: "What is your visa status?" },
+  ];
+  const [i, setI] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setI((v) => (v + 1) % hints.length), 4800);
+    return () => clearInterval(id);
+  }, []);
+
+  const curr = hints[i];
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.button
+        key={curr.label}
+        onClick={() => onAsk?.(curr.query)}
+        type="button"
+        initial={{ opacity: 0, y: 6, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -6, scale: 0.98 }}
+        transition={{ duration: 0.25 }}
+        className="fixed bottom-28 right-6 z-[51] max-w-[78vw] sm:max-w-xs
+                   rounded-2xl border border-white/10 bg-[rgba(20,8,8,0.92)]
+                   px-4 py-2.5 text-sm text-neutral-100 shadow-[0_20px_80px_rgba(229,9,20,0.18)]
+                   backdrop-blur-md text-left hover:bg-white/10"
+      >
+        {curr.label}
+        <span
+          className="absolute -bottom-2 right-6 h-4 w-4 rotate-45
+                     rounded-sm border-r border-b border-white/10
+                     bg-[rgba(20,8,8,0.92)]"
+          aria-hidden
+        />
+      </motion.button>
+    </AnimatePresence>
+  );
+}
+
+
+
 
 function SparkieFloating({ open, setOpen }) {
   const [sparks, setSparks] = useState([]);
+  const [pendingQ, setPendingQ] = useState(null);
+  const openAndAsk = (q) => {
+    setPendingQ(q);
+    setOpen(true);
+  };
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -713,6 +759,7 @@ function SparkieFloating({ open, setOpen }) {
 
   return (
     <>
+    {!open && <PreOpenHints onAsk={openAndAsk} />}
       {/* Launcher */}
       <button
         onClick={() => setOpen((v) => !v)}
@@ -754,7 +801,11 @@ function SparkieFloating({ open, setOpen }) {
                        shadow-[0_30px_140px_rgba(229,9,20,0.20),0_12px_36px_rgba(0,0,0,0.6)]
                        animate-bob-slower"
           >
-            <SparkieChat onClose={() => setOpen(false)} />
+            <SparkieChat
+              onClose={() => setOpen(false)}
+              autoQuestion={pendingQ}
+              onDrained={() => setPendingQ(null)}
+            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -826,13 +877,13 @@ function linkify(text) {
 
 
 
-function SparkieChat({ onClose }) {
+function SparkieChat({ onClose, autoQuestion, onDrained }) {
   const { answer } = useBotBrain();
   const [messages, setMessages] = useState([
     {
       role: "bot",
       text:
-        `Hi! I'm Sparkie. Ask me about experience, education, resume, a short summary, visa status, skills — or say "tell me a joke".`,
+        `Hi there 👋 I'm Sparkie. Try: "tell me a joke" 😊, "ask about Ganesh’s skills", "show experience", or "what's your visa status".`,
       typewriter: true,
     },
   ]);
@@ -851,7 +902,7 @@ function SparkieChat({ onClose }) {
   );
   const [suggIndex, setSuggIndex] = useState(0);
   useEffect(() => {
-    const id = setInterval(() => setSuggIndex((v) => (v + 1) % suggestions.length), 2600);
+    const id = setInterval(() => setSuggIndex((v) => (v + 1) % suggestions.length), 4200);
     return () => clearInterval(id);
   }, [suggestions.length]);
 
@@ -860,6 +911,18 @@ function SparkieChat({ onClose }) {
     if (!el) return;
     el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, [messages, thinking]);
+
+  useEffect(() => {
+  if (!autoQuestion) return;
+  // tiny delay so the panel paints before we push messages
+  const id = setTimeout(() => {
+    // send() already handles adding user msg + bot reply
+    send(autoQuestion);
+    onDrained?.();
+  }, 60);
+  return () => clearTimeout(id);
+}, [autoQuestion]);
+
 
   function send(qIn) {
   const mapped = qIn === "joke" ? "tell me a joke" : qIn;
@@ -1242,83 +1305,229 @@ const HUB_IMAGES = {
   resume: asset("/cards/resume.png"),
 };
 
-/* ===== Quick Look rail ===== */
+/* ===== Quick Look rail (no outer box, glass cards, infinite auto-scroll, center pop) ===== */
 function QuickLookRail({ onOpenModal }) {
-  const items = [
-    { id: "home", label: "About me", hint: "Summary" },
-    { id: "experience", label: "Experience", hint: "Roles & impact" },
-    { id: "skills", label: "Skills", hint: "Tech stack & tools" },
-    { id: "projects", label: "Projects", hint: "Selected work" },
-    { id: "certs", label: "Certifications", hint: "Credentials" },
-    { id: "contact", label: "Contact", hint: "Reach out" },
-    { id: "resume", label: "Resume", hint: "PDF download" },
+  // Base items (one cycle)
+  const BASE = [
+    { id: "home",       label: "About me",       hint: "Summary" },
+    { id: "experience", label: "Experience",     hint: "Roles & impact" },
+    { id: "skills",     label: "Skills",         hint: "Tech stack & tools" },
+    { id: "projects",   label: "Projects",       hint: "Selected work" },
+    { id: "certs",      label: "Certifications", hint: "Credentials" },
+    { id: "contact",    label: "Contact",        hint: "Reach out" },
+    { id: "resume",     label: "Resume",         hint: "PDF download" },
   ];
 
-  const scrollerRef = useRef(null);
-  const scrollBy = (dir) => {
-    scrollerRef.current?.scrollBy({ left: dir * 360, behavior: "smooth" });
+  // Artwork: use icons for these sections so they don't look magnified
+  const ART = {
+    certs:     { kind: "icon", icon: (cls) => <IconCertQL       className={cls} /> },
+    contact:   { kind: "icon", icon: (cls) => <IconContactQL     className={cls} /> },
+    resume:    { kind: "icon", icon: (cls) => <IconResumeQL      className={cls} /> },
+    experience:{ kind: "icon", icon: (cls) => <IconExperienceQL  className={cls} /> },
+    skills:    { kind: "icon", icon: (cls) => <IconSkillsQL      className={cls} /> },
+    projects:  { kind: "icon", icon: (cls) => <IconProjectsQL    className={cls} /> },
+    // others fall back to photos via HUB_IMAGES
   };
 
+  // Triplicate list so we can loop seamlessly
+  const items = useMemo(() => [...BASE, ...BASE, ...BASE], []); // length = 3N
+  const N = BASE.length;
+  const START = N; // start in the middle cycle
+
+  const scrollerRef = useRef(null);
+  const cardRefs = useRef([]);
+  const [activeIdx, setActiveIdx] = useState(START);
+
+  const centerToIndex = useCallback((idx, behavior = "smooth") => {
+    const wrap = scrollerRef.current;
+    const node = cardRefs.current[idx];
+    if (!wrap || !node) return;
+    const wrapRect = wrap.getBoundingClientRect();
+    const nodeRect = node.getBoundingClientRect();
+    const delta = (nodeRect.left + nodeRect.width / 2) - (wrapRect.left + wrapRect.width / 2);
+    wrap.scrollBy({ left: delta, behavior });
+  }, []);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => centerToIndex(START, "instant"));
+    return () => cancelAnimationFrame(id);
+  }, [centerToIndex]);
+
+  const recomputeActive = useCallback(() => {
+    const wrap = scrollerRef.current;
+    if (!wrap) return;
+    const wrapRect = wrap.getBoundingClientRect();
+    const centerX = wrapRect.left + wrapRect.width / 2;
+    let best = 0, bestDist = Infinity;
+    cardRefs.current.forEach((node, i) => {
+      if (!node) return;
+      const r = node.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const d = Math.abs(cx - centerX);
+      if (d < bestDist) { bestDist = d; best = i; }
+    });
+    setActiveIdx(best);
+  }, []);
+
+  useEffect(() => {
+    const on = () => recomputeActive();
+    window.addEventListener("resize", on);
+    const wrap = scrollerRef.current;
+    wrap && wrap.addEventListener("scroll", on, { passive: true });
+    recomputeActive();
+    return () => {
+      window.removeEventListener("resize", on);
+      wrap && wrap.removeEventListener("scroll", on);
+    };
+  }, [recomputeActive]);
+
+  // Auto-advance: 1.5s feels alive but not rushed
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (activeIdx >= N * 2 - 1) {
+        centerToIndex(activeIdx - N, "instant");
+        setActiveIdx((v) => v - N);
+        return;
+      }
+      const next = activeIdx + 1;
+      centerToIndex(next, "smooth");
+      setActiveIdx(next);
+    }, 1500);
+    return () => clearInterval(id);
+  }, [activeIdx, centerToIndex, N]);
+
+  const nudge = (dir) => {
+    let next = activeIdx + dir;
+    if (next <= N - 1) {
+      centerToIndex(next + N, "instant");
+      next += N;
+    } else if (next >= N * 2) {
+      centerToIndex(next - N, "instant");
+      next -= N;
+    }
+    centerToIndex(next, "smooth");
+    setActiveIdx(next);
+  };
+
+  const baseActive = activeIdx % N;
+
   return (
-    <div className="mt-8 rounded-3xl border border-white/10 bg-white/5 p-4 sm:p-5">
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex items-baseline gap-2">
-          <span className="text-white font-semibold">Quick look</span>
-          <span className="text-xs text-neutral-400">Tap a card to peek</span>
-        </div>
-        <div className="hidden sm:flex items-center gap-2">
-          <button
-            onClick={() => scrollBy(-1)}
-            className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-sm text-neutral-300 hover:bg-white/10"
-          >
-            ←
-          </button>
-          <button
-            onClick={() => scrollBy(1)}
-            className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-sm text-neutral-300 hover:bg-white/10"
-          >
-            →
-          </button>
+    <div className="mt-6">
+      {/* header row */}
+      <div className="mb-2 flex items-baseline gap-2 px-1">
+        <span className="text-white font-semibold">Quick look</span>
+        <span className="text-xs text-neutral-400">Tap a card to peek</span>
+        <div className="ml-auto hidden sm:flex items-center gap-2">
+          <button onClick={() => nudge(-1)}
+            className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-neutral-300 hover:bg-white/10">←</button>
+          <button onClick={() => nudge(1)}
+            className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-neutral-300 hover:bg-white/10">→</button>
         </div>
       </div>
 
-      <div className="relative">
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-black to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-black to-transparent" />
+      {/* Rail */}
+      <div className="relative" style={{ perspective: 1000 }}>
+        {/* soft edge fades */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-black to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black to-transparent" />
 
         <div
           ref={scrollerRef}
-          className="no-scrollbar grid auto-cols-[minmax(220px,280px)] grid-flow-col gap-4 overflow-x-auto snap-x snap-mandatory scroll-p-4"
+          className="no-scrollbar grid auto-cols-[minmax(180px,240px)] grid-flow-col gap-3
+                     overflow-x-auto snap-x snap-mandatory scroll-pl-2 pr-2"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
-          {items.map((it) => (
-            <button
-              key={it.id}
-              onClick={() => onOpenModal?.(it.id)}
-              className="group relative aspect-[16/10] w-[min(80vw,280px)] shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-black text-left shadow snap-start transition hover:scale-[1.02] hover:border-white/20"
-            >
-              <img
-                src={HUB_IMAGES[it.id]}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover opacity-60 transition group-hover:opacity-80"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-black/40 to-black/70" />
-              <div
-                className="absolute inset-0 opacity-0 transition group-hover:opacity-100"
-                style={{ background: "radial-gradient(90% 75% at 30% 20%, rgba(229,9,20,0.22), transparent 60%)" }}
-              />
-              <div className="relative flex h-full w-full flex-col justify-end p-4">
-                <div className="text-lg font-bold text-white drop-shadow">{it.label}</div>
-                <div className="text-[11px] text-neutral-300">{it.hint}</div>
-              </div>
-            </button>
-          ))}
+          {items.map((it, i) => {
+            const isActive = i === activeIdx;
+            const isNeighbor = Math.abs(i - activeIdx) === 1;
+            const baseIdx = i % N;
+            const baseId = BASE[baseIdx].id;
+            const def = ART[baseId] || { kind: "photo", src: HUB_IMAGES[baseId] };
+            const isIcon = def.kind === "icon";
+
+            return (
+              <button
+                key={`${it.id}-${i}`}
+                ref={(el) => (cardRefs.current[i] = el)}
+                onClick={() => {
+                  if ((i % N) === baseActive) onOpenModal?.(baseId);
+                  else centerToIndex(i, "smooth");
+                }}
+                className="group relative aspect-[16/10] w-[min(72vw,240px)] shrink-0
+                           overflow-hidden rounded-2xl ring-1 ring-white/10 text-left snap-center"
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  backdropFilter: "blur(6px)",
+                  WebkitBackdropFilter: "blur(6px)",
+                  transform: isActive
+                    ? "translateY(-6px) scale(1.07)"
+                    : isNeighbor
+                    ? "scale(1.02)"
+                    : "scale(0.97)",
+                  transition: "transform 420ms cubic-bezier(.2,.8,.2,1), box-shadow 300ms, filter 300ms",
+                  boxShadow: isActive
+                    ? "0 0 0 1px rgba(229,9,20,.25), 0 22px 70px rgba(229,9,20,.18)"
+                    : "0 10px 28px rgba(0,0,0,0.35)",
+                  zIndex: isActive ? 2 : 1,
+                }}
+              >
+                {/* Artwork layer */}
+                {isIcon ? (
+                  <>
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background:
+                          "radial-gradient(60% 60% at 50% 45%, rgba(255,255,255,0.08), rgba(255,255,255,0.02))",
+                      }}
+                    />
+                    <div className="absolute inset-0 grid place-items-center">
+                      {def.icon("text-white/90")}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <img
+                      src={def.src}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover opacity-55 transition group-hover:opacity-75"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div className="absolute inset-0 bg-white/[0.03]" />
+                  </>
+                )}
+
+                {/* neon breath only for photo cards */}
+                {!isIcon && (
+                  <span
+                    className="pointer-events-none absolute -top-1/3 -left-1/3 h-[220%] w-[220%] rounded-full transition-opacity duration-300"
+                    style={{
+                      background:
+                        "radial-gradient(55% 40% at 25% 0%, rgba(229,9,20,0.18), transparent 55%)",
+                      opacity: isActive ? 1 : 0,
+                    }}
+                  />
+                )}
+
+                {/* labels */}
+                <div className="relative z-10 flex h-full w-full flex-col justify-end p-3">
+                  <div className="text-[15px] sm:text-base font-bold text-white drop-shadow">
+                    {BASE[baseIdx].label}
+                  </div>
+                  <div className={`text-[10px] ${isIcon ? "text-neutral-200" : "text-neutral-300"}`}>
+                    {BASE[baseIdx].hint}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
   );
 }
+
 
 /* ===== ProjectCard (glossy card + neon hover) ===== */
 function ProjectCard({ p, variant = "pink" }) {
@@ -1727,6 +1936,84 @@ const IconGitHub = (p) => (
     />
   </svg>
 );
+/* ===== Small inline icons for QuickLook (no magnification) ===== */
+const IconContactQL = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+       strokeLinecap="round" strokeLinejoin="round" className={`h-12 w-12 ${p.className||""}`}>
+    <rect x="3" y="4" width="18" height="16" rx="3"/>
+    <circle cx="12" cy="10" r="3"/>
+    <path d="M5 17c2-2 4.5-3 7-3s5 1 7 3"/>
+  </svg>
+);
+
+const IconCertQL = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+       strokeLinecap="round" strokeLinejoin="round" className={`h-12 w-12 ${p.className||""}`}>
+    <circle cx="12" cy="8" r="5"/>
+    <path d="M8.5 14.5 7 22l5-2 5 2-1.5-7.5"/>
+  </svg>
+);
+
+const IconResumeQL = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+       strokeLinecap="round" strokeLinejoin="round" className={`h-12 w-12 ${p.className||""}`}>
+    <rect x="4" y="3" width="16" height="18" rx="2" ry="2"/>
+    <circle cx="12" cy="9" r="2.5"/>
+    <line x1="8" y1="13" x2="16" y2="13"/>
+    <line x1="8" y1="17" x2="16" y2="17"/>
+  </svg>
+);
+
+/* ===== More QuickLook icons (Experience, Skills, Projects) ===== */
+const IconExperienceQL = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+       strokeLinecap="round" strokeLinejoin="round" className={`h-12 w-12 ${p.className||""}`}>
+    <rect x="3" y="7" width="18" height="12" rx="2"/>
+    <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>
+    <path d="M3 13h18"/>
+  </svg>
+);
+
+// Gear (no inner circles)
+const IconSkillsQL = (p) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="butt"
+    strokeLinejoin="miter"
+    className={`h-12 w-12 ${p.className || ""}`}
+    aria-hidden="true"
+  >
+    {/* Teeth NESW */}
+    <rect x="11" y="2"  width="2" height="3" />
+    <rect x="11" y="19" width="2" height="3" />
+    <rect x="2"  y="11" width="3" height="2" />
+    <rect x="19" y="11" width="3" height="2" />
+
+    {/* Teeth diagonals (copy rotated 45° around center) */}
+    <g transform="rotate(45 12 12)">
+      <rect x="11" y="2"  width="2" height="3" />
+      <rect x="11" y="19" width="2" height="3" />
+      <rect x="2"  y="11" width="3" height="2" />
+      <rect x="19" y="11" width="3" height="2" />
+    </g>
+
+    {/* Optional tiny square hub — uncomment if you want a center mark */}
+    {/* <rect x="11.2" y="11.2" width="1.6" height="1.6" /> */}
+  </svg>
+);
+
+const IconProjectsQL = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+       strokeLinecap="round" strokeLinejoin="round" className={`h-12 w-12 ${p.className||""}`}>
+    <rect x="3" y="4" width="18" height="14" rx="2"/>
+    <path d="M3 9h18"/>
+    <path d="M8 17h8"/>
+  </svg>
+);
+
 
 
 
@@ -1762,6 +2049,104 @@ function WorkTile({ icon, title, text }) {
     </div>
   );
 }
+
+/* ===== Visitor Counter (debounced for StrictMode) ===== */
+function VisitorCounter({ className = "" }) {
+  const [count, setCount] = useState(null);
+  const [state, setState] = useState("loading"); // loading | ok | err
+
+  useEffect(() => {
+    const host = typeof location !== "undefined" ? location.hostname : "";
+    const isLocal =
+      host === "localhost" || host === "127.0.0.1" || host.endsWith(".local");
+
+    // ---- StrictMode guard: allow only one "bump" per ~1.5s ----
+    const lockKey = isLocal ? "gbk_lock_dev" : "gbk_lock_prod";
+    const now = Date.now();
+    let shouldBump = true;
+    try {
+      const last = Number(localStorage.getItem(lockKey) || 0);
+      if (now - last < 1500) shouldBump = false; // prevent double increment
+      localStorage.setItem(lockKey, String(now));
+    } catch {
+      // if storage blocked, just proceed
+    }
+
+    const run = async () => {
+      if (isLocal) {
+        // Dev-only counter using localStorage
+        const k = "gbk_dev_global_counter";
+        const cur = Number(localStorage.getItem(k) || 0);
+        const next = shouldBump ? cur + 1 : cur;
+        try { localStorage.setItem(k, String(next)); } catch {}
+        setCount(next);
+        setState("ok");
+        return;
+      }
+
+      // --- Production: CountAPI -> fallback hits.sh ---
+      const ns =
+        (typeof location !== "undefined"
+          ? `${location.host}${location.pathname}`.replace(/\W+/g, "-")
+          : "portfolio") || "portfolio";
+
+      const countapi = async (op /* "hit" | "get" */) => {
+        const r = await fetch(`https://api.countapi.xyz/${op}/${ns}/visits`, { cache: "no-store" });
+        if (!r.ok) throw new Error(`countapi ${r.status}`);
+        const d = await r.json();
+        if (typeof d?.value !== "number") throw new Error("countapi no value");
+        return d.value;
+      };
+
+      try {
+        const v = await countapi(shouldBump ? "hit" : "get");
+        setCount(v);
+        setState("ok");
+      } catch (e1) {
+        try {
+          const key = encodeURIComponent(`${location.host}${location.pathname}`);
+          if (shouldBump) {
+            // increment via beacon
+            const img = new Image();
+            img.referrerPolicy = "no-referrer";
+            img.src = `https://hits.sh/${key}.svg?view=1`;
+          }
+          const r = await fetch(`https://hits.sh/${key}.json`, { cache: "no-store" });
+          if (!r.ok) throw new Error(`hits ${r.status}`);
+          const d = await r.json();
+          if (typeof d?.hits !== "number") throw new Error("hits no value");
+          setCount(d.hits);
+          setState("ok");
+        } catch (e2) {
+          console.warn("[VisitorCounter] providers failed:", e1, e2);
+          setState("err");
+        }
+      }
+    };
+
+    run();
+  }, []);
+
+  if (state === "err") return null;
+
+  return (
+    <div
+      className={`mx-auto mt-6 inline-flex items-center gap-3 rounded-full
+                  border border-white/10 bg-white/[0.06] px-4 py-2
+                  text-sm text-neutral-200 ring-1 ring-white/5 backdrop-blur ${className}`}
+      style={{ boxShadow: "0 0 0 1px rgba(229,9,20,0.20), 0 18px 60px rgba(229,9,20,0.18)" }}
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full
+                       bg-gradient-to-br from-red-500 to-red-600 text-white text-sm">👀</span>
+      <div className={`font-semibold ${state === "loading" ? "text-neutral-300" : "text-white"}`}>
+        {state === "loading" ? "Visitor —" : `Visitor #${count}`}
+      </div>
+    </div>
+  );
+}
+
 
 
 /* ===== App ===== */
@@ -1857,6 +2242,7 @@ export default function NewNetflix() {
                 <p className="mt-3 text-xl text-neutral-300">
                   <RoleWheel />
                 </p>
+                <VisitorCounter />
               </div>
 
               {/* Quick look rail */}
@@ -1937,7 +2323,7 @@ export default function NewNetflix() {
             </section>
 
             <footer className="border-t border-white/5 py-10 text-center text-xs text-neutral-500">
-              Built with ♥ React, Tailwind & Framer Motion. © {new Date().getFullYear()} Ganesh.
+              🏋️‍♂️ fueled, ☕️ powered, 💻 built. © {new Date().getFullYear()} Ganesh.
             </footer>
           </main>
         </>
