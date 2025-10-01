@@ -2049,6 +2049,11 @@ function WorkTile({ icon, title, text }) {
     </div>
   );
 }
+// put this near the other small utils/constants, before VisitorCounter()
+const VISITOR_NS = "ganesh-portfolio";       // fixed namespace for CountAPI
+const VISITOR_KEY = "visits";
+const withTimeout = (p, ms = 2500) =>
+  Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);
 
 /* ===== Visitor Counter (debounced for StrictMode) ===== */
 function VisitorCounter({ className = "" }) {
@@ -2056,76 +2061,84 @@ function VisitorCounter({ className = "" }) {
   const [state, setState] = useState("loading"); // loading | ok | err
 
   useEffect(() => {
-    const host = typeof location !== "undefined" ? location.hostname : "";
-    const isLocal =
-      host === "localhost" || host === "127.0.0.1" || host.endsWith(".local");
+  const host = typeof location !== "undefined" ? location.hostname : "";
+  const isLocal =
+    host === "localhost" || host === "127.0.0.1" || host.endsWith(".local");
 
-    // ---- StrictMode guard: allow only one "bump" per ~1.5s ----
-    const lockKey = isLocal ? "gbk_lock_dev" : "gbk_lock_prod";
-    const now = Date.now();
-    let shouldBump = true;
-    try {
-      const last = Number(localStorage.getItem(lockKey) || 0);
-      if (now - last < 1500) shouldBump = false; // prevent double increment
-      localStorage.setItem(lockKey, String(now));
-    } catch {
-      // if storage blocked, just proceed
+  // ---- StrictMode guard: allow only one "bump" per ~1.5s ----
+  const lockKey = isLocal ? "gbk_lock_dev" : "gbk_lock_prod";
+  const now = Date.now();
+  let shouldBump = true;
+  try {
+    const last = Number(localStorage.getItem(lockKey) || 0);
+    if (now - last < 1500) shouldBump = false; // prevent double increment
+    localStorage.setItem(lockKey, String(now));
+  } catch {}
+
+  const run = async () => {
+    // Dev-only (unchanged): use localStorage counter
+    if (isLocal) {
+      const k = "gbk_dev_global_counter";
+      const cur = Number(localStorage.getItem(k) || 0);
+      const next = shouldBump ? cur + 1 : cur;
+      try { localStorage.setItem(k, String(next)); } catch {}
+      setCount(next);
+      setState("ok");
+      return;
     }
 
-    const run = async () => {
-      if (isLocal) {
-        // Dev-only counter using localStorage
-        const k = "gbk_dev_global_counter";
+    // --- PROD path with timeout + multi-provider fallback ---
+    const countapiHit = async () => {
+      const url = `https://api.countapi.xyz/hit/${VISITOR_NS}/${VISITOR_KEY}`;
+      const r = await withTimeout(fetch(url, { cache: "no-store" }));
+      if (!r.ok) throw new Error(`countapi ${r.status}`);
+      const d = await r.json();
+      if (typeof d?.value !== "number") throw new Error("countapi no value");
+      return d.value;
+    };
+
+    const hitsJson = async () => {
+      // increment via beacon if we’re counting this view
+      if (shouldBump) {
+        const key = encodeURIComponent(`${location.host}${location.pathname}`);
+        const img = new Image();
+        img.referrerPolicy = "no-referrer";
+        img.src = `https://hits.sh/${key}.svg?view=1`;
+      }
+      const key = encodeURIComponent(`${location.host}${location.pathname}`);
+      const r = await withTimeout(fetch(`https://hits.sh/${key}.json`, { cache: "no-store" }));
+      if (!r.ok) throw new Error(`hits ${r.status}`);
+      const d = await r.json();
+      if (typeof d?.hits !== "number") throw new Error("hits no value");
+      return d.hits;
+    };
+
+    try {
+      const v = await countapiHit();
+      setCount(v);
+      setState("ok");
+      return;
+    } catch (e1) {
+      try {
+        const v2 = await hitsJson();
+        setCount(v2);
+        setState("ok");
+        return;
+      } catch (e2) {
+        // Final local fallback so you always see *something*
+        const k = "gbk_fallback_counter";
         const cur = Number(localStorage.getItem(k) || 0);
         const next = shouldBump ? cur + 1 : cur;
         try { localStorage.setItem(k, String(next)); } catch {}
         setCount(next);
         setState("ok");
-        return;
       }
+    }
+  };
 
-      // --- Production: CountAPI -> fallback hits.sh ---
-      const ns =
-        (typeof location !== "undefined"
-          ? `${location.host}${location.pathname}`.replace(/\W+/g, "-")
-          : "portfolio") || "portfolio";
+  run();
+}, []);
 
-      const countapi = async (op /* "hit" | "get" */) => {
-        const r = await fetch(`https://api.countapi.xyz/${op}/${ns}/visits`, { cache: "no-store" });
-        if (!r.ok) throw new Error(`countapi ${r.status}`);
-        const d = await r.json();
-        if (typeof d?.value !== "number") throw new Error("countapi no value");
-        return d.value;
-      };
-
-      try {
-        const v = await countapi(shouldBump ? "hit" : "get");
-        setCount(v);
-        setState("ok");
-      } catch (e1) {
-        try {
-          const key = encodeURIComponent(`${location.host}${location.pathname}`);
-          if (shouldBump) {
-            // increment via beacon
-            const img = new Image();
-            img.referrerPolicy = "no-referrer";
-            img.src = `https://hits.sh/${key}.svg?view=1`;
-          }
-          const r = await fetch(`https://hits.sh/${key}.json`, { cache: "no-store" });
-          if (!r.ok) throw new Error(`hits ${r.status}`);
-          const d = await r.json();
-          if (typeof d?.hits !== "number") throw new Error("hits no value");
-          setCount(d.hits);
-          setState("ok");
-        } catch (e2) {
-          console.warn("[VisitorCounter] providers failed:", e1, e2);
-          setState("err");
-        }
-      }
-    };
-
-    run();
-  }, []);
 
   if (state === "err") return null;
 
