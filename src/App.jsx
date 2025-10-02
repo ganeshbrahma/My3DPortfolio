@@ -162,6 +162,7 @@ const NAV = [
   { id: "projects", label: "Projects" },
   { id: "experience", label: "Experience" },
   { id: "certs", label: "Certifications" },
+  { id: "resume", label: "Resume" },
   { id: "contact", label: "Contact" },
 ];
 
@@ -267,6 +268,23 @@ const IconPin = (props) => (
     <circle cx="12" cy="10" r="3" />
   </svg>
 );
+
+const IconMail = (p) => (
+  <svg viewBox="0 0 24 24" className={`h-6 w-6 ${p.className||""}`} fill="none" stroke="currentColor" strokeWidth="1.8">
+    <rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>
+  </svg>
+);
+const IconLinkedIn = (p) => (
+  <svg viewBox="0 0 24 24" className={`h-6 w-6 ${p.className||""}`} fill="currentColor" aria-hidden="true">
+    <path d="M4.98 3.5A2.5 2.5 0 1 1 0 3.5a2.5 2.5 0 0 1 4.98 0zM.5 8.5h4.96V24H.5zM9 8.5h4.75v2.1h.07c.66-1.25 2.28-2.56 4.7-2.56 5.03 0 5.96 3.31 5.96 7.62V24h-4.96v-6.8c0-1.62-.03-3.7-2.25-3.7-2.25 0-2.59 1.76-2.59 3.58V24H9z"/>
+  </svg>
+);
+const IconGit = (p) => (
+  <svg viewBox="0 0 24 24" className={`h-6 w-6 ${p.className||""}`} fill="currentColor" aria-hidden="true">
+    <path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.11.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.35-1.29-1.71-1.29-1.71-1.06-.73.08-.72.08-.72 1.18.09 1.8 1.22 1.8 1.22 1.04 1.79 2.74 1.27 3.41.97.11-.76.41-1.27.75-1.56-2.55-.29-5.23-1.28-5.23-5.68 0-1.25.45-2.26 1.2-3.06-.12-.29-.52-1.45.11-3.02 0 0 .98-.31 3.21 1.17a11.1 11.1 0 0 1 5.84 0c2.23-1.48 3.2-1.17 3.2-1.17.64 1.57.24 2.73.12 3.02.75.8 1.2 1.81 1.2 3.06 0 4.41-2.69 5.38-5.25 5.67.42.36.8 1.07.8 2.17v3.22c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .5Z"/>
+  </svg>
+);
+
 /*const asset = (p) => import.meta.env.BASE_URL + p;
 
 /* ===== Company logos (add your files under /public/logos) ===== */
@@ -276,6 +294,23 @@ const COMPANY_LOGOS = {
   "applaudo @ walmart": asset("/logos/applaudo.png"),
   "cognizant": asset("/logos/cognizant.svg"),
 };
+
+/* ===== CERT logos (put PNG/SVG files under /public/certs) ===== */
+const CERT_LOGOS = {
+  "azure data engineer": asset("/certs/azure-de.png"),
+  "azure data fundamentals": asset("/certs/azure-dp.png"),
+  "data scientist's toolbox": asset("/certs/coursera.svg"),
+};
+
+// best-effort match: looks up by partial text
+function getCertLogo(name = "") {
+  const key = name.toLowerCase();
+  if (key.includes("azure data engineer"))      return CERT_LOGOS["azure data engineer"];
+  if (key.includes("azure data fundamentals"))  return CERT_LOGOS["azure data fundamentals"];
+  if (key.includes("data scientist's toolbox")) return CERT_LOGOS["data scientist's toolbox"];
+  return null; // fallback handled in component
+}
+
 const getLogo = (company = "") => COMPANY_LOGOS[company.toLowerCase()];
 
 /* ===== RED pill ===== */
@@ -1392,7 +1427,7 @@ function QuickLookRail({ onOpenModal }) {
       const next = activeIdx + 1;
       centerToIndex(next, "smooth");
       setActiveIdx(next);
-    }, 1500);
+    }, 2800);
     return () => clearInterval(id);
   }, [activeIdx, centerToIndex, N]);
 
@@ -1529,6 +1564,78 @@ function QuickLookRail({ onOpenModal }) {
 }
 
 
+function CompactProjectRow({ p, i, onOpen }) {
+  const tags = (p.stack || "")
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .slice(0, 6); // keep it tight
+
+  const oneLiner =
+    (p.bullets && p.bullets[0]) ||
+    p.stack ||
+    "Click to view details";
+
+  return (
+    <button
+      onClick={() => onOpen?.(i)}
+      className="group w-full text-left rounded-2xl border border-white/10 bg-white/5
+                 px-4 py-3 transition hover:bg-white/10 hover:border-red-500/30"
+    >
+      {/* top row: title + hover GitHub */}
+      <div className="flex items-center gap-3">
+        <div className="grid h-9 w-9 place-items-center rounded-lg
+                        bg-gradient-to-br from-red-500 to-rose-600 text-white ring-1 ring-white/10">
+          <IconProjectsQL className="h-5 w-5" />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-[15px] font-semibold text-white">
+            {p.name}
+          </div>
+          <div className="truncate text-xs text-neutral-400">
+            {oneLiner}
+          </div>
+        </div>
+
+        {/* Hover GitHub button */}
+        {p.repo && (
+          <a
+            href={p.repo}
+            onClick={(e) => e.stopPropagation()}
+            target="_blank"
+            rel="noreferrer"
+            title="View on GitHub"
+            className="opacity-0 group-hover:opacity-100 transition
+                       inline-flex h-9 w-9 items-center justify-center rounded-lg
+                       bg-white/10 text-white/80 ring-1 ring-white/10 hover:bg-white/20"
+          >
+            <IconGitHub className="h-5 w-5" />
+          </a>
+        )}
+      </div>
+
+      {/* skills row (reveals on hover) */}
+      {tags.length > 0 && (
+        <div className="mt-2 max-h-0 overflow-hidden transition-[max-height] duration-300 group-hover:max-h-24">
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {tags.map((t, idx) => (
+              <span
+                key={idx}
+                className="rounded-full border border-white/10 bg-white/8 px-2.5 py-0.5
+                           text-[11px] text-neutral-200"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </button>
+  );
+}
+
+
 /* ===== ProjectCard (glossy card + neon hover) ===== */
 function ProjectCard({ p, variant = "pink" }) {
   // allow per-project override via p.color: "pink" | "blue"
@@ -1643,6 +1750,121 @@ function ProjectCard({ p, variant = "pink" }) {
   );
 }
 
+function ContactList() {
+  // Build a Gmail compose URL (optional: add subject/body defaults here)
+  const gmailCompose = (to, subject = "", body = "") =>
+    `https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=${encodeURIComponent(to)}${
+      subject ? `&su=${encodeURIComponent(subject)}` : ""
+    }${body ? `&body=${encodeURIComponent(body)}` : ""}`;
+
+  const items = [
+    {
+      icon: <IconMail className="text-white" />,
+      label: "Email",
+      text: PROFILE.links.email,
+      href: gmailCompose(PROFILE.links.email, "Hi Ganesh"),
+      kind: "gmail", // use our special handler
+    },
+    {
+      icon: <IconLinkedIn className="text-white" />,
+      label: "LinkedIn",
+      href: PROFILE.links.linkedin,
+    },
+    {
+      icon: <IconGit className="text-white" />,
+      label: "GitHub",
+      href: PROFILE.links.github,
+    },
+  ];
+
+  return (
+    <div>
+      <h3 className="mb-4 text-2xl font-bold text-white">Contact</h3>
+
+      {/* compact cards */}
+      <div className="flex flex-wrap justify-center gap-4">
+        {items.map((it) => (
+          <a
+            key={it.label}
+            href={it.href}
+            // Open external links in a new tab. Gmail handled below.
+            target={it.kind === "gmail" ? undefined : "_blank"}
+            rel="noreferrer noopener"
+            onClick={(e) => {
+              if (it.kind === "gmail") {
+                // Try Gmail compose in a new tab
+                e.preventDefault();
+                const w = window.open(it.href, "_blank", "noopener");
+                // Fallback to mailto if pop-up blocked or Gmail not available
+                if (!w || w.closed || typeof w.closed === "undefined") {
+                  window.location.href = `mailto:${PROFILE.links.email}`;
+                }
+              }
+            }}
+            className={`group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3
+                        hover:border-red-500/30 hover:bg-white/10 transition whitespace-nowrap
+                        ${it.label === "Email" ? "flex-1 max-w-xs" : "w-auto"}`}
+          >
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-red-500 to-rose-600 ring-1 ring-white/10">
+              {it.icon}
+            </div>
+
+            {/* center-only label text */}
+            <div className="flex-1 text-center text-white">
+              {it.label === "Email" ? it.text : it.label}
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
+
+
+
+function CertGrid() {
+  return (
+    <div>
+      <h3 className="mb-2 text-2xl font-bold text-white">Certifications</h3>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {PROFILE.certs.map((c) => {
+          const logo = getCertLogo(c.name);
+          return (
+            <a
+              key={c.name}
+              href={c.link}
+              target="_blank"
+              rel="noreferrer"
+              className="group block text-center"
+              title={c.name}
+            >
+              {/* image only (no card box), with subtle hover lift */}
+              {logo ? (
+                <img
+                  src={logo}
+                  alt={c.name}
+                  className="mx-auto h-24 w-auto object-contain transition-transform duration-300 group-hover:-translate-y-1"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <div className="mx-auto grid h-24 w-24 place-items-center rounded-full bg-white/10 text-white/80 text-sm">
+                  {c.name.split(" ").slice(0,2).map(w=>w[0]).join("").toUpperCase()}
+                </div>
+              )}
+              <div className="mt-3 text-[15px] font-medium text-neutral-200 underline decoration-red-400/70 group-hover:text-white group-hover:decoration-red-400">
+                {c.name}
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 
 /* ===== Modal content ===== */
 function ModalBody({ id }) {
@@ -1739,6 +1961,24 @@ function ModalBody({ id }) {
     );
   }
 
+  if (id && id.startsWith("project:")) {
+  const idx = Number(id.split(":")[1]);
+  const p = PROFILE.projects[idx];
+  if (!p) return null;
+
+  return (
+    <div>
+      <h3 className="mb-2 text-xl font-bold text-white">{p.name}</h3>
+      {/* Reuse the detailed ProjectCard for consistent look */}
+      <ProjectCard
+        p={p}
+        variant={idx % 3 === 0 ? "pink" : idx % 3 === 1 ? "blue" : "red"}
+      />
+    </div>
+  );
+}
+
+
   if (id === "projects") {
     return (
       <div>
@@ -1754,53 +1994,12 @@ function ModalBody({ id }) {
 
 
   if (id === "certs") {
-    return (
-      <div>
-        <h3 className="mb-2 text-xl font-bold text-white">Certifications</h3>
-        <ul className="space-y-2 text-sm text-neutral-300">
-          {PROFILE.certs.map((c) => (
-            <li key={c.name}>
-              <a className="text-red-400 underline" href={c.link} target="_blank" rel="noreferrer">
-                {c.name}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
+    return <CertGrid />;
   }
 
   if (id === "contact") {
-    return (
-      <div className="space-y-2 text-sm text-neutral-300">
-        <h3 className="text-xl font-bold text-white">Contact</h3>
-        <p>Prefer email for fastest response.</p>
-        <p>
-          Email:{" "}
-          <a className="text-red-400 underline" href={`mailto:${PROFILE.links.email}`}>
-            {PROFILE.links.email}
-          </a>
-        </p>
-        <p>
-          LinkedIn:{" "}
-          <a className="text-red-400 underline" href={PROFILE.links.linkedin} target="_blank" rel="noreferrer">
-            linkedin.com/in/ganeshbrahma
-          </a>
-        </p>
-        <p>
-          Resume:{" "}
-          <a
-            className="text-red-400 underline"
-            href={PROFILE.links.resume}
-            target="_blank"
-            rel="noreferrer"
-          >
-            View / Download PDF
-          </a>
-        </p>
-      </div>
-      );
-  }
+  return <ContactList />;
+}
 
     if (id === "resume") {
     return (
@@ -2290,14 +2489,81 @@ export default function NewNetflix() {
               <TechnicalExpertise />
             </section>
 
-            <section id="projects" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-              <h2 className="mb-4 text-2xl font-bold text-white">Projects</h2>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {PROFILE.projects.map((p, i) => (
-                  <ProjectCard key={p.name} p={p} variant={ i % 3 === 0 ? "pink" : i % 3 === 1 ? "blue" : "red" } />
-                ))}
-              </div>
-            </section>
+            <section
+  id="projects"
+  className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8"
+>
+  <h2 className="mb-6 text-2xl font-bold text-white">Projects</h2>
+
+  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {PROFILE.projects.map((p, i) => (
+      <button
+        key={p.name}
+        onClick={() => setModal(`project:${i}`)}
+        className="group relative overflow-hidden rounded-[26px]
+             border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.02]
+             backdrop-blur-md p-5 sm:p-6
+             shadow-[0_20px_60px_rgba(0,0,0,0.35)]
+             transition-all duration-300
+             hover:-translate-y-1 hover:shadow-[0_0_0_1px_rgba(229,9,20,.25),0_28px_90px_rgba(229,9,20,.18)] hover:border-red-500/50"
+      >
+        {/* Neon/glassy card content */}
+        <div className="flex items-center gap-3">
+          <div
+            className={`grid h-12 w-12 place-items-center rounded-xl 
+                        bg-gradient-to-br from-red-500 to-rose-600 ring-1 ring-white/10
+                        transition group-hover:scale-105`}
+          >
+            <IconProjectsQL className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <div className="text-base font-semibold text-white truncate">
+              {p.name}
+            </div>
+            <div className="mt-0.5 text-sm text-neutral-400">
+  {(p.bullets && p.bullets[0]) || p.stack || ""}
+</div>
+
+          </div>
+        </div>
+
+        {/* Skills row */}
+        {p.stack && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {p.stack
+              .split(",")
+              .slice(0, 4)
+              .map((t, idx) => (
+                <span
+                  key={idx}
+                  className="rounded-full border border-white/10 bg-white/10 
+                             px-2 py-0.5 text-xs text-neutral-300"
+                >
+                  {t.trim()}
+                </span>
+              ))}
+          </div>
+        )}
+
+        {/* GitHub link (hover only) */}
+        {p.repo && (
+          <a
+            href={p.repo}
+            onClick={(e) => e.stopPropagation()}
+            target="_blank"
+            rel="noreferrer"
+            className="absolute top-4 right-4 opacity-0 transition group-hover:opacity-100
+                       inline-flex h-8 w-8 items-center justify-center rounded-lg
+                       bg-white/10 text-white/80 ring-1 ring-white/10 hover:bg-white/20"
+          >
+            <IconGitHub className="h-4 w-4" />
+          </a>
+        )}
+      </button>
+    ))}
+  </div>
+</section>
+
 
             <section id="experience" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
   <div className="mb-8 text-center">
@@ -2311,52 +2577,35 @@ export default function NewNetflix() {
 
 
             <section id="certs" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-              <h2 className="mb-4 text-2xl font-bold text-white">Certifications</h2>
-              <ul className="space-y-2">
-                {PROFILE.certs.map((c) => (
-                  <li key={c.name} className="text-neutral-300">
-                    <a className="text-red-400 underline" href={c.link} target="_blank" rel="noreferrer">
-                      {c.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <CertGrid />
             </section>
 
+<section id="resume" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+  <h2 className="mb-3 text-2xl font-bold text-white">Resume</h2>
+
+  <div className="flex flex-wrap gap-3">
+    <a
+      href={PROFILE.links.resume}
+      target="_blank"
+      rel="noreferrer"
+      className="rounded-xl bg-white/10 px-4 py-2 text-sm text-neutral-100 hover:bg-white/20"
+    >
+      View PDF
+    </a>
+    <a
+      href={PROFILE.links.resume}
+      download
+      className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500"
+    >
+      Download
+    </a>
+  </div>
+</section>
+
             <section id="contact" className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-              <h2 className="mb-4 text-2xl font-bold text-white">Contact</h2>
-              <ul className="space-y-2 text-neutral-300">
-                <li>
-                  Email:{" "}
-                  <a className="text-red-400 underline" href={`mailto:${PROFILE.links.email}`}>
-                    {PROFILE.links.email}
-                  </a>
-                </li>
-                <li>
-                  LinkedIn:{" "}
-                  <a className="text-red-400 underline" href={PROFILE.links.linkedin} target="_blank" rel="noreferrer">
-                    linkedin.com/in/ganeshbrahma
-                  </a>
-                </li>
-                <li>
-                  GitHub:{" "}
-                  <a className="text-red-400 underline" href={PROFILE.links.github} target="_blank" rel="noreferrer">
-                    github.com/ganeshbrahma
-                  </a>
-                </li>
-                <li>
-                  Resume:{" "}
-                  <a
-                    className="text-red-400 underline"
-                    href={PROFILE.links.resume}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    View / Download PDF
-                  </a>
-                </li>
-              </ul>
-            </section>
+  <ContactList />
+</section>
+
 
             <footer className="border-t border-white/5 py-10 text-center text-xs text-neutral-500">
               <div className="mb-4 flex justify-center">
