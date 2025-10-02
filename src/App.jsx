@@ -2075,6 +2075,15 @@ function VisitorCounter({ className = "" }) {
     localStorage.setItem(lockKey, String(now));
   } catch {}
 
+  // ---- Session guard: only bump ONCE per browser tab/session ----
+const sessionKey = "gbk_session_bumped_v1";
+try {
+  if (sessionStorage.getItem(sessionKey) === "1") {
+    shouldBump = false;
+  }
+} catch {}
+
+
   const run = async () => {
     // Dev-only (unchanged): use localStorage counter
     if (isLocal) {
@@ -2088,52 +2097,55 @@ function VisitorCounter({ className = "" }) {
     }
 
     // --- PROD path with timeout + multi-provider fallback ---
-    const countapiHit = async () => {
-      const url = `https://api.countapi.xyz/hit/${VISITOR_NS}/${VISITOR_KEY}`;
-      const r = await withTimeout(fetch(url, { cache: "no-store" }));
-      if (!r.ok) throw new Error(`countapi ${r.status}`);
-      const d = await r.json();
-      if (typeof d?.value !== "number") throw new Error("countapi no value");
-      return d.value;
-    };
 
-    const hitsJson = async () => {
-      // increment via beacon if we’re counting this view
-      if (shouldBump) {
-        const key = encodeURIComponent(`${location.host}${location.pathname}`);
-        const img = new Image();
-        img.referrerPolicy = "no-referrer";
-        img.src = `https://hits.sh/${key}.svg?view=1`;
-      }
-      const key = encodeURIComponent(`${location.host}${location.pathname}`);
-      const r = await withTimeout(fetch(`https://hits.sh/${key}.json`, { cache: "no-store" }));
-      if (!r.ok) throw new Error(`hits ${r.status}`);
-      const d = await r.json();
-      if (typeof d?.hits !== "number") throw new Error("hits no value");
-      return d.hits;
-    };
+// CountAPI with op = "hit" (increment) or "get" (read only)
+const countapiCall = async (op /* "hit" | "get" */) => {
+  const url = `https://api.countapi.xyz/${op}/${VISITOR_NS}/${VISITOR_KEY}`;
+  const r = await withTimeout(fetch(url, { cache: "no-store" }));
+  if (!r.ok) throw new Error(`countapi ${r.status}`);
+  const d = await r.json();
+  if (typeof d?.value !== "number") throw new Error("countapi no value");
+  return d.value;
+};
 
-    try {
-      const v = await countapiHit();
-      setCount(v);
-      setState("ok");
-      return;
-    } catch (e1) {
-      try {
-        const v2 = await hitsJson();
-        setCount(v2);
-        setState("ok");
-        return;
-      } catch (e2) {
-        // Final local fallback so you always see *something*
-        const k = "gbk_fallback_counter";
-        const cur = Number(localStorage.getItem(k) || 0);
-        const next = shouldBump ? cur + 1 : cur;
-        try { localStorage.setItem(k, String(next)); } catch {}
-        setCount(next);
-        setState("ok");
-      }
-    }
+// hits.sh fallback using the SAME fixed namespace/key
+const hitsCall = async () => {
+  const key = encodeURIComponent(`${VISITOR_NS}/${VISITOR_KEY}`);
+  if (shouldBump) {
+    const img = new Image();
+    img.referrerPolicy = "no-referrer";
+    img.src = `https://hits.sh/${key}.svg?view=1`; // increments
+  }
+  const r = await withTimeout(fetch(`https://hits.sh/${key}.json`, { cache: "no-store" }));
+  if (!r.ok) throw new Error(`hits ${r.status}`);
+  const d = await r.json();
+  if (typeof d?.hits !== "number") throw new Error("hits no value");
+  return d.hits;
+};
+
+try {
+  const v = await countapiCall(shouldBump ? "hit" : "get");
+  setCount(v);
+  setState("ok");
+  if (shouldBump) { try { sessionStorage.setItem("gbk_session_bumped_v1", "1"); } catch {} }
+  return;
+} catch (e1) {
+  try {
+    const v2 = await hitsCall();
+    setCount(v2);
+    setState("ok");
+    if (shouldBump) { try { sessionStorage.setItem("gbk_session_bumped_v1", "1"); } catch {} }
+    return;
+  } catch (e2) {
+    // Final local fallback so you always see something
+    const k = "gbk_fallback_counter";
+    const cur = Number(localStorage.getItem(k) || 0);
+    const next = shouldBump ? cur + 1 : cur;
+    try { localStorage.setItem(k, String(next)); } catch {}
+    setCount(next);
+    setState("ok");
+  }
+}
   };
 
   run();
@@ -2159,6 +2171,18 @@ function VisitorCounter({ className = "" }) {
     </div>
   );
 }
+
+  // ---- Session guard: only bump ONCE per browser tab/session ----
+  const sessionKey = "gbk_session_bumped_v1";
+  try {
+    if (sessionStorage.getItem(sessionKey) === "1") {
+      shouldBump = false;
+    }
+  } catch {}
+
+  // ---- FIXED namespace so different paths/devices roll up to ONE counter ----
+  const NS = "ganesh-portfolio-v1"; // <-- change if you ever want to reset the counter
+
 
 
 
@@ -2255,7 +2279,6 @@ export default function NewNetflix() {
                 <p className="mt-3 text-xl text-neutral-300">
                   <RoleWheel />
                 </p>
-                <VisitorCounter />
               </div>
 
               {/* Quick look rail */}
@@ -2336,6 +2359,9 @@ export default function NewNetflix() {
             </section>
 
             <footer className="border-t border-white/5 py-10 text-center text-xs text-neutral-500">
+              <div className="mb-4 flex justify-center">
+                <VisitorCounter className="mx-auto" />
+              </div>
               🏋️‍♂️ fueled, ☕️ powered, 💻 built. © {new Date().getFullYear()} Ganesh.
             </footer>
           </main>
