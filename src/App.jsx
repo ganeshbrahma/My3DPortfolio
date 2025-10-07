@@ -1892,9 +1892,7 @@ function ModalBody({ id }) {
           {/* story paragraphs */}
           <div className="space-y-4 text-[15px] leading-relaxed">
             <p className="text-neutral-200">
-              I build reliable, observable data platforms on <span className="font-semibold text-white">Databricks + Delta/Lakehouse</span>,
-              with strong <span className="font-semibold text-white">SQL/Python</span>, data modeling, and governance delivering end to end
-              pipelines and BI that teams actually use.
+              Hello, I’m Ganesh — welcome to my profile! I’m a data enthusiast who loves exploring the intersection of data, engineering, and impact. I build reliable, observable data platforms on <span className="font-semibold text-white">Databricks + Delta/Lakehouse</span>, leveraging strong <span className="font-semibold text-white">SQL/Python</span>, data modeling, and governance to turn complex data into clear, actionable insights that teams can trust. Outside of work, you’ll find me at the gym, on a trail, or saying yes to a new adventure.
             </p>
             <p className="text-neutral-300">
               My journey has been about impact: speeding up pipelines (up to <span className="font-semibold text-white">57%</span>),
