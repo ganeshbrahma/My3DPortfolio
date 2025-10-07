@@ -1892,16 +1892,14 @@ function ModalBody({ id }) {
           {/* story paragraphs */}
           <div className="space-y-4 text-[15px] leading-relaxed">
             <p className="text-neutral-200">
-              Hello, I’m Ganesh — welcome to my profile! I’m a data enthusiast who loves exploring the intersection of data, engineering, and impact. I build reliable, observable data platforms on <span className="font-semibold text-white">Databricks + Delta/Lakehouse</span>, leveraging strong <span className="font-semibold text-white">SQL/Python</span>, data modeling, and governance to turn complex data into clear, actionable insights that teams can trust. Outside of work, you’ll find me at the gym, on a trail, or saying yes to a new adventure.
-            </p>
-            <p className="text-neutral-300">
-              My journey has been about impact: speeding up pipelines (up to <span className="font-semibold text-white">57%</span>),
-              hardening quality with <span className="font-semibold text-white">Unity Catalog</span>, and shipping iteratively with clear docs
-              and observability.
-            </p>
-            <p className="text-neutral-300">
-              When I’m off the clock, I’m at the <span className="font-semibold text-white">gym</span>, out on a <span className="font-semibold text-white">trail/hike</span>,
-              or saying yes to the next <span className="font-semibold text-white">adventure</span>.
+              Hello, I’m Ganesh — welcome to my profile! 
+I’m a data enthusiast who loves exploring the intersection of data, engineering, and impact. 
+Over the years, I’ve built reliable, observable data platforms using <span className="font-semibold text-white">Databricks + Delta/Lakehouse</span>, <span className="font-semibold text-white">SQL</span>, and <span className="font-semibold text-white">Python</span> — helping teams turn complex, messy data into clear, actionable insights.
+
+What excites me most is the journey from raw data to real value — designing robust pipelines, optimizing performance, and ensuring that every dataset tells a trustworthy story. Whether it’s improving pipeline efficiency, implementing governance with <span className="font-semibold text-white">Unity Catalog</span>, or fine-tuning data models for BI, I’m passionate about creating systems that people actually use and rely on.
+
+Beyond work, I’m a big believer in balance — you’ll often find me at the gym, on a trail, or saying yes to a new adventure. Each experience, in and out of work, teaches me something new about curiosity, resilience, and continuous learning.
+
             </p>
           </div>
         </div>
