@@ -25,6 +25,19 @@ const PROFILE = {
   skills:
     "Python, PySpark, Java, SQL, PL/SQL, Scala, Linux, Spark SQL, BigQuery • Spark, Hive, Sqoop, Hadoop, Databricks, Azure Data Factory, Airflow, Unity Catalog, Terraform • Azure (ADLS, Synapse, Blob, HDInsight), AWS (Lambda, S3, Glue, Redshift, Athena), GCP • Power BI, GitLab/Jenkins CI/CD",
   projects: [
+
+    {
+  name: "Predictive Healthcare Analytics – End-to-End Diabetes Insights",
+  stack: "PostgreSQL, Azure Data Factory, Azure Blob, Databricks (Delta/Lakehouse, MLflow), Power BI, Python",
+  time: "Oct 2025",
+  repo: "https://github.com/ganeshbrahma/predictive-healthcare-analytics", // replace if needed
+  bullets: [
+    "Ingested source tables from PostgreSQL via ADF into Azure Blob; processed Bronze → Silver → Gold Delta tables in Databricks.",
+    "Built Power BI dashboard (SQL Warehouse) with KPIs and slices by Age, BMI, and Glucose; focused on diabetes prevalence patterns.",
+    "Trained Logistic Regression & XGBoost; tracked runs with MLflow; selected best model by ROC-AUC for diabetes risk prediction.",
+    "Outcome: surfaced obesity-linked risk (~45% prevalence for BMI>30) and a deployable classifier for early identification."
+   ]
+  },  
     {
       name: "My 3D Portfolio",
       stack: "React, Tailwind CSS, Framer Motion, Vite, GitHub Pages, Node.js",
