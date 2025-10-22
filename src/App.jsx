@@ -30,7 +30,7 @@ const PROFILE = {
   name: "Predictive Healthcare Analytics – End-to-End Diabetes Insights",
   stack: "PostgreSQL, Azure Data Factory, Azure Blob, Databricks (Delta/Lakehouse, MLflow), Power BI, Python",
   time: "Oct 2025",
-  repo: "https://github.com/ganeshbrahma/predictive-healthcare-analytics", // replace if needed
+  repo: "https://github.com/ganeshbrahma/diabetes-e2e-health-analytics",
   bullets: [
     "Ingested source tables from PostgreSQL via ADF into Azure Blob; processed Bronze → Silver → Gold Delta tables in Databricks.",
     "Built Power BI dashboard (SQL Warehouse) with KPIs and slices by Age, BMI, and Glucose; focused on diabetes prevalence patterns.",
