@@ -27,15 +27,15 @@ const PROFILE = {
   projects: [
 
     {
-  name: "Predictive Healthcare Analytics – End-to-End Diabetes Insights",
-  stack: "PostgreSQL, Azure Data Factory, Azure Blob, Databricks (Delta/Lakehouse, MLflow), Power BI, Python",
+  name: "Predictive Healthcare Analytics",
+  stack: "PostgreSQL, Azure Data Factory, Azure Blob, Databricks, Power BI, Python",
   time: "Oct 2025",
   repo: "https://github.com/ganeshbrahma/diabetes-e2e-health-analytics",
   bullets: [
     "Ingested source tables from PostgreSQL via ADF into Azure Blob; processed Bronze → Silver → Gold Delta tables in Databricks.",
     "Built Power BI dashboard (SQL Warehouse) with KPIs and slices by Age, BMI, and Glucose; focused on diabetes prevalence patterns.",
-    "Trained Logistic Regression & XGBoost; tracked runs with MLflow; selected best model by ROC-AUC for diabetes risk prediction.",
-    "Outcome: surfaced obesity-linked risk (~45% prevalence for BMI>30) and a deployable classifier for early identification."
+    "Trained Logistic Regression & XGBoost; tracked runs with MLflow; selected best model by ROC AUC for diabetes risk prediction.",
+    "Outcome: surfaced obesity linked risk (~45% prevalence for BMI>30) and a deployable classifier for early identification."
    ]
   },  
     {
@@ -45,11 +45,11 @@ const PROFILE = {
       repo: "https://github.com/ganeshbrahma/My3DPortfolio",  // update link if different
       bullets: [
         "This portfolio itself was designed as a Netflix inspired interactive site to showcase my projects, skills, and experience in an engaging format.",
-        "Built the front-end with React, Tailwind CSS, and Framer Motion for smooth animations, neon hover effects, and responsive design.",
+        "Built the front end with React, Tailwind CSS, and Framer Motion for smooth animations, neon hover effects, and responsive design.",
         "Set up Vite for fast development and optimized builds, and deployed via GitHub Pages for lightweight hosting.",
         "Engineered modular card style sections for Projects, Skills, and Experience, each with glossy hover states, neon glows, and smooth modal transitions.",
         "Integrated **GPT-5** through a custom assistant called *Sparkie Bot*, which dynamically answers visitor questions about my education, skills, and experience.",
-        "Implemented Sparkie by feeding it structured profile data and wiring it into the UI with Node.js and APIs — showcasing practical AI/ML integration within a portfolio project."
+        "Implemented Sparkie by feeding it structured profile data and wiring it into the UI with Node.js and APIs showcasing practical AI/ML integration within a portfolio project."
       ]
     },
     {
@@ -70,7 +70,7 @@ const PROFILE = {
       time: "Jun 2020",
       repo: "https://github.com/ganeshbrahma/AviationProject",
       bullets: [
-        "This project tackled the challenge of migrating and analyzing large volumes of airport operations data, where legacy systems lacked the scalability needed for real-time insights.","We migrated relational data from MySQL into Hadoop using Sqoop, enabling both batch and streaming pipelines with Spark/Flink.",
+        "This project tackled the challenge of migrating and analyzing large volumes of airport operations data, where legacy systems lacked the scalability needed for real time insights.","We migrated relational data from MySQL into Hadoop using Sqoop, enabling both batch and streaming pipelines with Spark/Flink.",
         "Processed data was stored in Hive for warehousing and HBase for NoSQL access, ensuring flexible querying options.",
         "Finally, insights were delivered through Tableau/Power BI dashboards, empowering business stakeholders to monitor KPIs like passenger traffic and flight operations with much greater accuracy and timeliness."
       ],
@@ -2510,11 +2510,12 @@ export default function NewNetflix() {
         key={p.name}
         onClick={() => setModal(`project:${i}`)}
         className="group relative overflow-hidden rounded-[26px]
-             border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.02]
-             backdrop-blur-md p-5 sm:p-6
-             shadow-[0_20px_60px_rgba(0,0,0,0.35)]
-             transition-all duration-300
-             hover:-translate-y-1 hover:shadow-[0_0_0_1px_rgba(229,9,20,.25),0_28px_90px_rgba(229,9,20,.18)] hover:border-red-500/50"
+           border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.02]
+           backdrop-blur-md p-5 sm:px-6 sm:pt-6 sm:pb-8 min-h-[230px]
+           shadow-[0_20px_60px_rgba(0,0,0,0.35)]
+           transition-all duration-300
+           hover:-translate-y-1 hover:shadow-[0_0_0_1px_rgba(229,9,20,.25),0_28px_90px_rgba(229,9,20,.18)]
+           hover:border-red-500/50"
       >
         {/* Neon/glassy card content */}
         <div className="flex items-center gap-3">
@@ -2529,7 +2530,7 @@ export default function NewNetflix() {
             <div className="text-base font-semibold text-white truncate">
               {p.name}
             </div>
-            <div className="mt-0.5 text-sm text-neutral-400">
+            <div className="mt-0.5 text-sm text-neutral-400 leading-relaxed break-words">
   {(p.bullets && p.bullets[0]) || p.stack || ""}
 </div>
 
